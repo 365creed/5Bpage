@@ -1,0 +1,16 @@
+{
+  "name": "설치 배너에 표시되는 이름(검색의 키워드로 사용됨)",
+  "short_name": "프로젝트 이름(아이콘의 이름으로 표시됨)", 
+  "description": "PWA를 공부하려는 프로젝트",
+  "start_url": "./index.html?qa=homescreen", 
+  "display": "fullscreen", 
+  "orientation": "portrait", 
+  "theme_color": "#037777777777", 
+  "background_color": "#ffffff", 
+  "icons": [
+    { "src": "favicon.ico", 
+      "sizes": "64x64 32x32 24x24 16x16", 
+      "type": "image/x-icon"
+    }
+ ]
+}
