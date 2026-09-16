@@ -1,6 +1,5 @@
 /**
- * 2B Bloom: Particle Constellation Canvas
- * Supports Desktop Mouse & Mobile Touch Repulsion
+ * 2B Breeze: High-DPI Kinetic Particle Canvas
  */
 class HeroBackground {
   constructor(canvasId) {
@@ -9,41 +8,46 @@ class HeroBackground {
 
     this.ctx = this.canvas.getContext('2d');
     this.particles = [];
-    this.particleCount = window.innerWidth < 768 ? 30 : 60;
-    this.pointer = { x: null, y: null, radius: 100 };
+    this.count = window.innerWidth < 768 ? 36 : 68;
+    this.pointer = { x: null, y: null, radius: 120 };
 
     this.init();
   }
 
   init() {
     this.resize();
-    this.createParticles();
-    this.bindEvents();
-    this.animate();
+    this.create();
+    this.bind();
+    this.loop();
   }
 
   resize() {
-    this.canvas.width = this.canvas.parentElement.clientWidth;
-    this.canvas.height = this.canvas.parentElement.clientHeight;
+    const dpr = window.devicePixelRatio || 1;
+    const rect = this.canvas.parentElement.getBoundingClientRect();
+    this.canvas.width = rect.width * dpr;
+    this.canvas.height = rect.height * dpr;
+    this.ctx.scale(dpr, dpr);
+    this.width = rect.width;
+    this.height = rect.height;
   }
 
-  createParticles() {
+  create() {
     this.particles = [];
-    for (let i = 0; i < this.particleCount; i++) {
+    for (let i = 0; i < this.count; i++) {
       this.particles.push({
-        x: Math.random() * this.canvas.width,
-        y: Math.random() * this.canvas.height,
-        size: Math.random() * 2 + 1.2,
-        speedX: (Math.random() - 0.5) * 0.7,
-        speedY: (Math.random() - 0.5) * 0.7
+        x: Math.random() * this.width,
+        y: Math.random() * this.height,
+        vx: (Math.random() - 0.5) * 0.75,
+        vy: (Math.random() - 0.5) * 0.75,
+        size: Math.random() * 2 + 1
       });
     }
   }
 
-  bindEvents() {
+  bind() {
     window.addEventListener('resize', () => {
       this.resize();
-      this.createParticles();
+      this.create();
     });
 
     const updatePointer = (clientX, clientY) => {
@@ -53,30 +57,28 @@ class HeroBackground {
     };
 
     window.addEventListener('mousemove', (e) => updatePointer(e.clientX, e.clientY));
-    window.addEventListener('touchstart', (e) => {
-      updatePointer(e.touches[0].clientX, e.touches[0].clientY);
-    }, { passive: true });
     window.addEventListener('touchmove', (e) => {
-      updatePointer(e.touches[0].clientX, e.touches[0].clientY);
+      if (e.touches.length > 0) {
+        updatePointer(e.touches[0].clientX, e.touches[0].clientY);
+      }
     }, { passive: true });
 
-    window.addEventListener('touchend', () => { this.pointer.x = null; this.pointer.y = null; });
-    window.addEventListener('mouseout', () => { this.pointer.x = null; this.pointer.y = null; });
+    window.addEventListener('mouseout', () => { this.pointer.x = null; });
+    window.addEventListener('touchend', () => { this.pointer.x = null; });
   }
 
-  animate() {
-    this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+  loop() {
+    this.ctx.clearRect(0, 0, this.width, this.height);
 
     for (let i = 0; i < this.particles.length; i++) {
       const p = this.particles[i];
-      p.x += p.speedX;
-      p.y += p.speedY;
+      p.x += p.vx;
+      p.y += p.vy;
 
-      if (p.x < 0 || p.x > this.canvas.width) p.speedX *= -1;
-      if (p.y < 0 || p.y > this.canvas.height) p.speedY *= -1;
+      if (p.x < 0 || p.x > this.width) p.vx *= -1;
+      if (p.y < 0 || p.y > this.height) p.vy *= -1;
 
-      // Pointer Repulsion
-      if (this.pointer.x !== null && this.pointer.y !== null) {
+      if (this.pointer.x !== null) {
         const dx = this.pointer.x - p.x;
         const dy = this.pointer.y - p.y;
         const dist = Math.hypot(dx, dy);
@@ -88,18 +90,17 @@ class HeroBackground {
         }
       }
 
-      this.ctx.fillStyle = 'rgba(0, 242, 254, 0.7)';
+      this.ctx.fillStyle = 'rgba(0, 242, 254, 0.65)';
       this.ctx.beginPath();
       this.ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
       this.ctx.fill();
 
-      // Draw constellation connections
       for (let j = i + 1; j < this.particles.length; j++) {
         const p2 = this.particles[j];
         const dist = Math.hypot(p.x - p2.x, p.y - p2.y);
-        if (dist < 90) {
-          this.ctx.strokeStyle = `rgba(0, 242, 254, ${0.12 * (1 - dist / 90)})`;
-          this.ctx.lineWidth = 1;
+        if (dist < 95) {
+          this.ctx.strokeStyle = `rgba(0, 242, 254, ${0.15 * (1 - dist / 95)})`;
+          this.ctx.lineWidth = 0.8;
           this.ctx.beginPath();
           this.ctx.moveTo(p.x, p.y);
           this.ctx.lineTo(p2.x, p2.y);
@@ -107,7 +108,8 @@ class HeroBackground {
         }
       }
     }
-    requestAnimationFrame(() => this.animate());
+
+    requestAnimationFrame(() => this.loop());
   }
 }
 
