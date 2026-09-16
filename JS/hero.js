@@ -1,5 +1,5 @@
 /**
- * 2B Breeze: Kinetic Particle Canvas with Dynamic Harmonic Color State
+ * 2B Breeze: Kinetic Particle Canvas with Dynamic Harmonic State
  */
 class HeroBackground {
   constructor(canvasId) {
@@ -21,17 +21,22 @@ class HeroBackground {
     this.bind();
     this.loop();
 
-    // Listen for state shift from 1B Beat or 3B Beam
+    // Harmonic State Sync: 1B/3B 색상이 파티클에 전파
     window.addEventListener('5b:harmonic-shift', (e) => {
       if (e.detail?.color) {
         this.currentColor = e.detail.color;
-        // Temporary kinetic pulse to particles
         this.particles.forEach(p => {
-          p.vx *= 1.4;
-          p.vy *= 1.4;
+          p.vx *= 1.35;
+          p.vy *= 1.35;
         });
       }
     });
+
+    // Mobile vs Desktop 안내 문구 최적화
+    const guideEl = document.getElementById('breeze-guide-text');
+    if (guideEl && window.innerWidth < 768) {
+      guideEl.textContent = '👆 손가락으로 화면을 문질러 입자를 흔들어보세요.';
+    }
   }
 
   resize() {
@@ -88,7 +93,6 @@ class HeroBackground {
       p.x += p.vx;
       p.y += p.vy;
 
-      // Dampen kinetic pulse gradually
       p.vx *= 0.995;
       p.vy *= 0.995;
 
