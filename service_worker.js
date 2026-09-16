@@ -1,8 +1,8 @@
 /**
- * 5Bpage Service Worker (5B Byte Engine)
- * Cache-First Architecture for Offline Resiliency
+ * 5B OS Service Worker (5B Byte Engine)
+ * Offline Shell Cache (Zero Broken Image Requests)
  */
-const CACHE_NAME = '5bpage-v6.0.0';
+const CACHE_NAME = '5bpage-v7.0.0';
 
 const PRECACHE_RESOURCES = [
   './',
