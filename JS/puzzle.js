@@ -1,8 +1,8 @@
 /**
  * 4B Brain: Solvable 8-Tile Puzzle Engine
- * - Clear Lifecycle: IDLE (Start Button) -> PLAYING (100% Solvable Scramble) -> SOLVED
- * - Neighbor Highlight: Movable tiles have .movable class and cyan glow
- * - Unified Click/Touch Support
+ * - 100% Guaranteed Solvability (Simulated legal random moves from Goal State)
+ * - Undo Stack, Timer, Move Tracker, LocalStorage Best Scores
+ * - Haptic Vibration (navigator.vibrate) & Mechanical Audio
  */
 class SlidingPuzzle {
   constructor(boardId) {
@@ -11,7 +11,8 @@ class SlidingPuzzle {
 
     this.size = 3;
     this.total = 9;
-    this.tiles = [1, 2, 3, 4, 5, 6, 7, 8, 0]; // Goal state
+    this.tiles = [1, 2, 3, 4, 5, 6, 7, 8, 0];
+    this.history = [];
     this.moves = 0;
     this.seconds = 0;
     this.timer = null;
@@ -21,13 +22,17 @@ class SlidingPuzzle {
     this.timerEl = document.getElementById('puzzle-timer');
     this.msgEl = document.getElementById('puzzle-message');
     this.startBtn = document.getElementById('btn-puzzle-start');
+    this.undoBtn = document.getElementById('btn-puzzle-undo');
     this.overlay = document.getElementById('puzzle-overlay');
+    this.bestMovesEl = document.getElementById('best-record-moves');
+    this.bestTimeEl = document.getElementById('best-record-time');
 
     this.init();
   }
 
   init() {
-    // Event delegation on board container
+    this.loadBestRecord();
+
     this.board.addEventListener('click', (e) => {
       if (!this.isPlaying) return;
       const tileEl = e.target.closest('.puzzle-tile');
@@ -36,21 +41,50 @@ class SlidingPuzzle {
       this.handleTileClick(clickedIdx);
     });
 
-    this.startBtn?.addEventListener('click', () => {
-      this.startNewGame();
-    });
+    this.startBtn?.addEventListener('click', () => this.startNewGame());
+    this.undoBtn?.addEventListener('click', () => this.undo());
 
-    // Render initial goal state
     this.render();
+  }
+
+  loadBestRecord() {
+    const saved = localStorage.getItem('5b_puzzle_best');
+    if (saved) {
+      try {
+        const data = JSON.parse(saved);
+        if (this.bestMovesEl) this.bestMovesEl.textContent = data.moves;
+        if (this.bestTimeEl) this.bestTimeEl.textContent = this.formatTime(data.seconds);
+      } catch (_) {}
+    }
+  }
+
+  saveBestRecord(moves, seconds) {
+    const saved = localStorage.getItem('5b_puzzle_best');
+    let isBetter = false;
+    if (!saved) {
+      isBetter = true;
+    } else {
+      const data = JSON.parse(saved);
+      if (moves < data.moves || (moves === data.moves && seconds < data.seconds)) {
+        isBetter = true;
+      }
+    }
+
+    if (isBetter) {
+      localStorage.setItem('5b_puzzle_best', JSON.stringify({ moves, seconds }));
+      this.loadBestRecord();
+    }
   }
 
   startNewGame() {
     this.moves = 0;
     this.seconds = 0;
+    this.history = [];
     this.isPlaying = true;
     if (this.msgEl) this.msgEl.textContent = '';
     this.overlay?.classList.add('hidden');
-    this.startBtn.textContent = '🔄 다시 섞기';
+    this.startBtn.textContent = '🔄 새로 섞기';
+    if (this.undoBtn) this.undoBtn.disabled = true;
     this.updateStats();
 
     clearInterval(this.timer);
@@ -116,18 +150,35 @@ class SlidingPuzzle {
     const neighbors = this.getNeighbors(emptyIdx);
 
     if (neighbors.includes(clickedIdx)) {
+      // Save for Undo
+      this.history.push([...this.tiles]);
+      if (this.undoBtn) this.undoBtn.disabled = false;
+
       [this.tiles[clickedIdx], this.tiles[emptyIdx]] = [this.tiles[emptyIdx], this.tiles[clickedIdx]];
       this.moves++;
       this.updateStats();
 
-      // Trigger mechanical sound
+      // Audio & Vibration Haptic Feedback
       window.dispatchEvent(new CustomEvent('app:puzzle-move'));
+      if (navigator.vibrate) navigator.vibrate(22);
+
       this.render();
 
       if (this.checkWin()) {
         this.handleWin();
       }
     }
+  }
+
+  undo() {
+    if (!this.isPlaying || this.history.length === 0) return;
+    this.tiles = this.history.pop();
+    this.moves = Math.max(0, this.moves - 1);
+    if (this.history.length === 0 && this.undoBtn) this.undoBtn.disabled = true;
+    this.updateStats();
+
+    window.dispatchEvent(new CustomEvent('app:puzzle-move'));
+    this.render();
   }
 
   checkWin() {
@@ -140,13 +191,27 @@ class SlidingPuzzle {
   handleWin() {
     this.isPlaying = false;
     clearInterval(this.timer);
+    this.saveBestRecord(this.moves, this.seconds);
+
     if (this.msgEl) {
       this.msgEl.textContent = `🎉 4B Brain 완료! [${this.moves}회 이동 • ${this.formatTime(this.seconds)}]`;
     }
     this.startBtn.textContent = '🎮 다시 도전';
+    if (this.undoBtn) this.undoBtn.disabled = true;
+
     this.overlay?.classList.remove('hidden');
-    if (this.overlay) this.overlay.innerHTML = '<p>🎉 퍼즐 완성! 축하합니다!</p>';
+    if (this.overlay) {
+      this.overlay.innerHTML = `<p>🎉 4B Brain 완료!<br/><strong>${this.moves}회 이동 / ${this.formatTime(this.seconds)}</strong></p>`;
+    }
+
+    if (navigator.vibrate) navigator.vibrate([80, 40, 100]);
     window.dispatchEvent(new CustomEvent('app:puzzle-win'));
+
+    // Sync to Session
+    window.dispatchEvent(new CustomEvent('5b:session-update', {
+      detail: { brainSolved: true, moves: this.moves, seconds: this.seconds }
+    }));
+
     this.render();
   }
 
