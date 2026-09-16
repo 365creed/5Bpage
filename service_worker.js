@@ -1,8 +1,8 @@
 /**
  * 5Bpage Service Worker (5B Byte Engine)
- * Offline Shell Cache (No 404 External Image Failures)
+ * Cache-First Architecture for Offline Resiliency
  */
-const CACHE_NAME = '5bpage-v5.0.0';
+const CACHE_NAME = '5bpage-v6.0.0';
 
 const PRECACHE_RESOURCES = [
   './',
@@ -22,12 +22,11 @@ const PRECACHE_RESOURCES = [
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then(async (cache) => {
-      console.log('[5B Byte SW] Caching offline shell...');
+      console.log('[5B Byte SW] Pre-caching offline shell...');
       const promises = PRECACHE_RESOURCES.map(resource =>
         fetch(resource).then(res => {
           if (res.ok) return cache.put(resource, res);
-          console.warn('[SW] Pre-cache skipped:', resource);
-        }).catch(err => console.warn('[SW] Fetch failed:', resource, err))
+        }).catch(() => {})
       );
       await Promise.allSettled(promises);
     }).then(() => self.skipWaiting())
