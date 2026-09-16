@@ -92,7 +92,7 @@
      * Web Audio 버퍼 폭주 및 매크로 클릭으로 인한 브라우저 크래시 차단
      */
     setupRateLimiting() {
-      const MAX_EVENTS_PER_SECOND = 25;
+      const MAX_EVENTS_PER_SECOND = 35;
       let eventCount = 0;
       let lastReset = Date.now();
 
