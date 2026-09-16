@@ -150,7 +150,6 @@ class SlidingPuzzle {
     const neighbors = this.getNeighbors(emptyIdx);
 
     if (neighbors.includes(clickedIdx)) {
-      // Save for Undo
       this.history.push([...this.tiles]);
       if (this.undoBtn) this.undoBtn.disabled = false;
 
@@ -201,7 +200,7 @@ class SlidingPuzzle {
 
     this.overlay?.classList.remove('hidden');
     if (this.overlay) {
-      this.overlay.innerHTML = `<p>🎉 4B Brain 완료!<br/><strong>${this.moves}회 이동 / ${this.formatTime(this.seconds)}</strong></p>`;
+      this.overlay.innerHTML = `<div class="tutorial-card"><h3>🎉 4B BRAIN SOLVED!</h3><p>이동 횟수: <strong>${this.moves}회</strong></p><p>소요 시간: <strong>${this.formatTime(this.seconds)}</strong></p></div>`;
     }
 
     if (navigator.vibrate) navigator.vibrate([80, 40, 100]);
