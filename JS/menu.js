@@ -1,5 +1,5 @@
 /**
- * Navigation & Responsive Drawer Module
+ * Navigation & Responsive Mobile Menu
  */
 class NavigationMenu {
   constructor() {
