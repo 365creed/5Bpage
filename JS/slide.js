@@ -1,141 +1,164 @@
 /**
- * 5B Interactive Slider Module
- * - Supports 5B Storytelling across 5 distinct slides
- * - Touch Swipe (passive listeners) & Smooth Drag
- * - Real-time frequency dispatching for Web Audio synthesis
+ * 3B Beam: Cross-Platform Interactive Slider
+ * - Click navigation (Buttons, Dots)
+ * - Mouse drag & Mobile touch swipe gesture tracking
+ * - Audio frequency broadcasting
  */
 class InteractiveSlider {
-  constructor(sliderWrapperId) {
-    this.wrapper = document.getElementById(sliderWrapperId);
+  constructor(wrapperId) {
+    this.wrapper = document.getElementById(wrapperId);
     if (!this.wrapper) return;
 
     this.track = document.getElementById('slider-track');
     this.slides = Array.from(this.track.querySelectorAll('.slide-item'));
     this.prevBtn = document.getElementById('btn-slide-prev');
     this.nextBtn = document.getElementById('btn-slide-next');
-    this.indicatorsContainer = document.getElementById('slider-indicators');
+    this.indicators = document.getElementById('slider-indicators');
     this.progressBar = document.getElementById('slide-progress');
 
     this.currentIndex = 0;
-    this.totalSlides = this.slides.length;
-    this.autoPlayInterval = 5500;
-    this.timer = null;
+    this.total = this.slides.length;
+    this.interval = 5500;
+    this.autoTimer = null;
     this.progressTimer = null;
 
-    this.startX = 0;
+    // Gesture State (Pointer / Mouse / Touch)
     this.isDragging = false;
-    this.dragThreshold = 45;
+    this.startX = 0;
+    this.currentTranslate = 0;
+    this.dragThreshold = 50;
 
     this.init();
   }
 
   init() {
-    this.buildIndicators();
+    this.createIndicators();
     this.bindEvents();
-    this.updateSlide(0);
-    this.startAutoPlay();
+    this.update(0);
+    this.startAuto();
   }
 
-  buildIndicators() {
-    if (!this.indicatorsContainer) return;
-    this.indicatorsContainer.innerHTML = '';
-    this.slides.forEach((_, idx) => {
+  createIndicators() {
+    if (!this.indicators) return;
+    this.indicators.innerHTML = '';
+    this.slides.forEach((_, i) => {
       const dot = document.createElement('div');
       dot.classList.add('indicator-dot');
-      if (idx === 0) dot.classList.add('active');
-      dot.addEventListener('click', () => {
-        this.updateSlide(idx);
-        this.restartAutoPlay();
+      if (i === 0) dot.classList.add('active');
+      dot.addEventListener('click', (e) => {
+        e.stopPropagation();
+        this.update(i);
+        this.startAuto();
       });
-      this.indicatorsContainer.appendChild(dot);
+      this.indicators.appendChild(dot);
     });
   }
 
   bindEvents() {
-    this.prevBtn?.addEventListener('click', () => {
+    this.prevBtn?.addEventListener('click', (e) => {
+      e.stopPropagation();
       this.prev();
-      this.restartAutoPlay();
+      this.startAuto();
     });
-    this.nextBtn?.addEventListener('click', () => {
+    this.nextBtn?.addEventListener('click', (e) => {
+      e.stopPropagation();
       this.next();
-      this.restartAutoPlay();
+      this.startAuto();
     });
 
-    // Touch Swipe Event Binding
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowLeft') { this.prev(); this.startAuto(); }
+      if (e.key === 'ArrowRight') { this.next(); this.startAuto(); }
+    });
+
+    // Touch Support
     this.track.addEventListener('touchstart', (e) => {
       this.startX = e.touches[0].clientX;
       this.isDragging = true;
-      this.stopAutoPlay();
+      this.stopAuto();
     }, { passive: true });
 
     this.track.addEventListener('touchend', (e) => {
       if (!this.isDragging) return;
       const endX = e.changedTouches[0].clientX;
-      const deltaX = endX - this.startX;
-
-      if (deltaX < -this.dragThreshold) {
-        this.next();
-      } else if (deltaX > this.dragThreshold) {
-        this.prev();
-      }
+      const delta = endX - this.startX;
+      if (delta < -this.dragThreshold) this.next();
+      else if (delta > this.dragThreshold) this.prev();
       this.isDragging = false;
-      this.startAutoPlay();
-    }, { passive: true });
-  }
-
-  updateSlide(index) {
-    this.currentIndex = (index + this.totalSlides) % this.totalSlides;
-    this.track.style.transform = `translateX(-${this.currentIndex * 100}%)`;
-
-    // Indicators Update
-    const dots = this.indicatorsContainer?.querySelectorAll('.indicator-dot');
-    dots?.forEach((dot, i) => {
-      dot.classList.toggle('active', i === this.currentIndex);
+      this.startAuto();
     });
 
-    // Audio Sync Dispatch
+    // Mouse Drag Support
+    this.wrapper.addEventListener('mousedown', (e) => {
+      // Ignore clicks on buttons/indicators
+      if (e.target.closest('button') || e.target.closest('.indicator-dot')) return;
+      this.startX = e.clientX;
+      this.isDragging = true;
+      this.wrapper.classList.add('grabbing');
+      this.stopAuto();
+    });
+
+    window.addEventListener('mouseup', (e) => {
+      if (!this.isDragging) return;
+      const delta = e.clientX - this.startX;
+      if (delta < -this.dragThreshold) this.next();
+      else if (delta > this.dragThreshold) this.prev();
+      this.isDragging = false;
+      this.wrapper.classList.remove('grabbing');
+      this.startAuto();
+    });
+
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) this.stopAuto();
+      else this.startAuto();
+    });
+  }
+
+  update(index) {
+    this.currentIndex = (index + this.total) % this.total;
+    const offset = -this.currentIndex * 100;
+    this.track.style.transform = `translateX(${offset}%)`;
+
+    const dots = this.indicators?.querySelectorAll('.indicator-dot');
+    dots?.forEach((d, i) => d.classList.toggle('active', i === this.currentIndex));
+
+    // Dispatch Audio Frequency for 1B Beat
     const activeSlide = this.slides[this.currentIndex];
-    const pitch = parseFloat(activeSlide.getAttribute('data-sound-pitch') || 440);
+    const pitch = parseFloat(activeSlide.getAttribute('data-pitch') || 440);
 
     window.dispatchEvent(new CustomEvent('app:slide-change', {
       detail: { index: this.currentIndex, pitch }
     }));
 
-    this.resetProgress();
+    this.animateProgressBar();
   }
 
-  next() { this.updateSlide(this.currentIndex + 1); }
-  prev() { this.updateSlide(this.currentIndex - 1); }
+  next() { this.update(this.currentIndex + 1); }
+  prev() { this.update(this.currentIndex - 1); }
 
-  startAutoPlay() {
-    this.stopAutoPlay();
-    this.resetProgress();
-    this.timer = setInterval(() => this.next(), this.autoPlayInterval);
+  startAuto() {
+    this.stopAuto();
+    this.animateProgressBar();
+    this.autoTimer = setInterval(() => this.next(), this.interval);
   }
 
-  stopAutoPlay() {
-    if (this.timer) clearInterval(this.timer);
+  stopAuto() {
+    if (this.autoTimer) clearInterval(this.autoTimer);
     if (this.progressTimer) clearInterval(this.progressTimer);
   }
 
-  restartAutoPlay() {
-    this.startAutoPlay();
-  }
-
-  resetProgress() {
+  animateProgressBar() {
     if (!this.progressBar) return;
     this.progressBar.style.width = '0%';
     let elapsed = 0;
-    const step = 50;
+    const step = 40;
 
     if (this.progressTimer) clearInterval(this.progressTimer);
     this.progressTimer = setInterval(() => {
       elapsed += step;
-      const percent = Math.min((elapsed / this.autoPlayInterval) * 100, 100);
-      this.progressBar.style.width = `${percent}%`;
-      if (elapsed >= this.autoPlayInterval) {
-        clearInterval(this.progressTimer);
-      }
+      const pct = Math.min((elapsed / this.interval) * 100, 100);
+      this.progressBar.style.width = `${pct}%`;
+      if (elapsed >= this.interval) clearInterval(this.progressTimer);
     }, step);
   }
 }
