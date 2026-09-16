@@ -70,7 +70,7 @@ class InteractiveSlider {
       if (e.key === 'ArrowRight') { this.next(); this.startAuto(); }
     });
 
-    // Touch Support (Mobile)
+    // Mobile Touch
     this.track.addEventListener('touchstart', (e) => {
       this.startX = e.touches[0].clientX;
       this.diffX = 0;
@@ -91,7 +91,7 @@ class InteractiveSlider {
       this.startAuto();
     });
 
-    // Mouse Drag Support (Desktop)
+    // Desktop Mouse Drag
     this.wrapper.addEventListener('mousedown', (e) => {
       if (e.target.closest('button') || e.target.closest('.indicator-dot')) return;
       this.startX = e.clientX;
