@@ -1,7 +1,7 @@
 /**
  * 4B Brain: Solvable 8-Tile Puzzle Engine
  * - 100% Guaranteed Solvability (Simulated legal random moves from Goal State)
- * - Click Event Delegation: Flawlessly supports Mouse Click, Trackpad, Touch, and Mobile Taps
+ * - Click Event Delegation (Mouse Click, Touch, Tap)
  */
 class SlidingPuzzle {
   constructor(boardId) {
@@ -25,7 +25,6 @@ class SlidingPuzzle {
   }
 
   init() {
-    // Event delegation on the board container (handles both desktop click & mobile tap cleanly)
     this.board.addEventListener('click', (e) => {
       const tileEl = e.target.closest('.puzzle-tile');
       if (!tileEl || tileEl.classList.contains('empty')) return;
@@ -50,10 +49,10 @@ class SlidingPuzzle {
       this.updateStats();
     }, 1000);
 
-    // Goal State: 1 to 8 in order, 0 is empty
+    // Solved Goal State
     this.tiles = [1, 2, 3, 4, 5, 6, 7, 8, 0];
 
-    // Mathematical guarantee: 120 valid random swaps starting from solved state
+    // Guarantee 100% Solvability: 120 valid random swaps from Goal State
     let lastSwapped = -1;
     for (let step = 0; step < 120; step++) {
       const emptyIdx = this.tiles.indexOf(0);
@@ -103,14 +102,11 @@ class SlidingPuzzle {
     const neighbors = this.getNeighbors(emptyIdx);
 
     if (neighbors.includes(clickedIdx)) {
-      // Valid adjacent move -> Swap
       [this.tiles[clickedIdx], this.tiles[emptyIdx]] = [this.tiles[emptyIdx], this.tiles[clickedIdx]];
       this.moves++;
       this.updateStats();
 
-      // Trigger mechanical tile sound
       window.dispatchEvent(new CustomEvent('app:puzzle-move'));
-
       this.render();
 
       if (this.checkWin()) {
