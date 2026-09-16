@@ -1,12 +1,12 @@
 {
-  "name": "5Bpage Interactive Platform",
-  "short_name": "5Bpage",
+  "name": "5B OS Interactive Platform",
+  "short_name": "5B OS",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
   "background_color": "#08090d",
   "theme_color": "#00f2fe",
-  "description": "The 5-Dimension Web Architecture: Beat, Breeze, Beam, Brain, Byte",
+  "description": "5-Dimension Web Architecture: Beat, Breeze, Beam, Brain, Byte",
   "icons": [
     {
       "src": "images/icon/icon-main.png",
