@@ -5,10 +5,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
   <meta name="theme-color" content="#08090d" />
   <title>5Bpage | 5-Dimension Web Architecture</title>
+  <!-- [중요] 최우선 보안 엔진 로드 (모든 스크립트 실행 전 환경 잠금) -->
+  <script src="./js/security.js"></script>
+
+  <!-- PWA & Favicon Link -->
   <link rel="manifest" href="./manifest.json" />
   <link rel="icon" type="image/png" sizes="32x32" href="./images/icon/favicon-32x32.png" />
   <link rel="stylesheet" href="./css/style.css" />
-</head>
+  </head>
+  
 <body>
   <!-- [1B Beat] Global Audio Visualizer Dock -->
   <aside id="audio-dock" class="audio-dock" aria-label="오디오 신디사이저 제어기">
