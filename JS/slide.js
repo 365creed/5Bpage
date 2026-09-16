@@ -1,9 +1,8 @@
 /**
- * Custom Interactive Slider Module
- * - Touch Swipe & Pointer Drag
- * - Keyboard (Arrow keys)
- * - Auto-loop with Page Visibility Pause
- * - Dispatches 'app:slide-change' for audio-visual sync
+ * 5B Interactive Slider Module
+ * - Supports 5B Storytelling across 5 distinct slides
+ * - Touch Swipe (passive listeners) & Smooth Drag
+ * - Real-time frequency dispatching for Web Audio synthesis
  */
 class InteractiveSlider {
   constructor(sliderWrapperId) {
@@ -19,27 +18,25 @@ class InteractiveSlider {
 
     this.currentIndex = 0;
     this.totalSlides = this.slides.length;
-    this.autoPlayInterval = 5000;
+    this.autoPlayInterval = 5500;
     this.timer = null;
     this.progressTimer = null;
 
-    // Drag / Touch State
-    this.isDragging = false;
     this.startX = 0;
-    this.currentTranslate = 0;
-    this.prevTranslate = 0;
+    this.isDragging = false;
+    this.dragThreshold = 45;
 
     this.init();
   }
 
   init() {
-    this.createIndicators();
+    this.buildIndicators();
     this.bindEvents();
     this.updateSlide(0);
     this.startAutoPlay();
   }
 
-  createIndicators() {
+  buildIndicators() {
     if (!this.indicatorsContainer) return;
     this.indicatorsContainer.innerHTML = '';
     this.slides.forEach((_, idx) => {
@@ -47,8 +44,8 @@ class InteractiveSlider {
       dot.classList.add('indicator-dot');
       if (idx === 0) dot.classList.add('active');
       dot.addEventListener('click', () => {
-        this.goToSlide(idx);
-        this.resetAutoPlay();
+        this.updateSlide(idx);
+        this.restartAutoPlay();
       });
       this.indicatorsContainer.appendChild(dot);
     });
@@ -56,92 +53,47 @@ class InteractiveSlider {
 
   bindEvents() {
     this.prevBtn?.addEventListener('click', () => {
-      this.prevSlide();
-      this.resetAutoPlay();
+      this.prev();
+      this.restartAutoPlay();
     });
     this.nextBtn?.addEventListener('click', () => {
-      this.nextSlide();
-      this.resetAutoPlay();
+      this.next();
+      this.restartAutoPlay();
     });
 
-    // Keyboard Arrow Control
-    window.addEventListener('keydown', (e) => {
-      if (e.key === 'ArrowLeft') {
-        this.prevSlide();
-        this.resetAutoPlay();
-      } else if (e.key === 'ArrowRight') {
-        this.nextSlide();
-        this.resetAutoPlay();
+    // Touch Swipe Event Binding
+    this.track.addEventListener('touchstart', (e) => {
+      this.startX = e.touches[0].clientX;
+      this.isDragging = true;
+      this.stopAutoPlay();
+    }, { passive: true });
+
+    this.track.addEventListener('touchend', (e) => {
+      if (!this.isDragging) return;
+      const endX = e.changedTouches[0].clientX;
+      const deltaX = endX - this.startX;
+
+      if (deltaX < -this.dragThreshold) {
+        this.next();
+      } else if (deltaX > this.dragThreshold) {
+        this.prev();
       }
-    });
-
-    // Touch & Pointer Drag Events
-    this.track.addEventListener('touchstart', (e) => this.dragStart(e.touches[0].clientX), { passive: true });
-    this.track.addEventListener('touchmove', (e) => this.dragMove(e.touches[0].clientX), { passive: true });
-    this.track.addEventListener('touchend', () => this.dragEnd());
-
-    this.track.addEventListener('mousedown', (e) => {
-      this.dragStart(e.clientX);
-      this.track.style.cursor = 'grabbing';
-    });
-    window.addEventListener('mousemove', (e) => this.dragMove(e.clientX));
-    window.addEventListener('mouseup', () => {
-      if (this.isDragging) {
-        this.dragEnd();
-        this.track.style.cursor = 'grab';
-      }
-    });
-
-    // Pause on Tab blur
-    document.addEventListener('visibilitychange', () => {
-      if (document.hidden) {
-        this.stopAutoPlay();
-      } else {
-        this.startAutoPlay();
-      }
-    });
-  }
-
-  dragStart(x) {
-    this.isDragging = true;
-    this.startX = x;
-    this.stopAutoPlay();
-  }
-
-  dragMove(x) {
-    if (!this.isDragging) return;
-    const diff = x - this.startX;
-    this.currentTranslate = this.prevTranslate + diff;
-  }
-
-  dragEnd() {
-    if (!this.isDragging) return;
-    this.isDragging = false;
-    const movedBy = this.currentTranslate - this.prevTranslate;
-
-    if (movedBy < -60) {
-      this.nextSlide();
-    } else if (movedBy > 60) {
-      this.prevSlide();
-    } else {
-      this.updateSlide(this.currentIndex);
-    }
-    this.startAutoPlay();
+      this.isDragging = false;
+      this.startAutoPlay();
+    }, { passive: true });
   }
 
   updateSlide(index) {
     this.currentIndex = (index + this.totalSlides) % this.totalSlides;
-    const offset = -this.currentIndex * 100;
-    this.track.style.transform = `translateX(${offset}%)`;
-    this.prevTranslate = (offset / 100) * this.wrapper.clientWidth;
+    this.track.style.transform = `translateX(-${this.currentIndex * 100}%)`;
 
-    // Update Indicators
+    // Indicators Update
     const dots = this.indicatorsContainer?.querySelectorAll('.indicator-dot');
-    dots?.forEach((dot, idx) => {
-      dot.classList.toggle('active', idx === this.currentIndex);
+    dots?.forEach((dot, i) => {
+      dot.classList.toggle('active', i === this.currentIndex);
     });
 
-    // Dispatch Audio Sync Event with target slide pitch
+    // Audio Sync Dispatch
     const activeSlide = this.slides[this.currentIndex];
     const pitch = parseFloat(activeSlide.getAttribute('data-sound-pitch') || 440);
 
@@ -149,19 +101,16 @@ class InteractiveSlider {
       detail: { index: this.currentIndex, pitch }
     }));
 
-    this.resetProgressBar();
+    this.resetProgress();
   }
 
-  goToSlide(idx) { this.updateSlide(idx); }
-  nextSlide() { this.updateSlide(this.currentIndex + 1); }
-  prevSlide() { this.updateSlide(this.currentIndex - 1); }
+  next() { this.updateSlide(this.currentIndex + 1); }
+  prev() { this.updateSlide(this.currentIndex - 1); }
 
   startAutoPlay() {
     this.stopAutoPlay();
-    this.resetProgressBar();
-    this.timer = setInterval(() => {
-      this.nextSlide();
-    }, this.autoPlayInterval);
+    this.resetProgress();
+    this.timer = setInterval(() => this.next(), this.autoPlayInterval);
   }
 
   stopAutoPlay() {
@@ -169,11 +118,11 @@ class InteractiveSlider {
     if (this.progressTimer) clearInterval(this.progressTimer);
   }
 
-  resetAutoPlay() {
+  restartAutoPlay() {
     this.startAutoPlay();
   }
 
-  resetProgressBar() {
+  resetProgress() {
     if (!this.progressBar) return;
     this.progressBar.style.width = '0%';
     let elapsed = 0;
@@ -182,8 +131,8 @@ class InteractiveSlider {
     if (this.progressTimer) clearInterval(this.progressTimer);
     this.progressTimer = setInterval(() => {
       elapsed += step;
-      const pct = Math.min((elapsed / this.autoPlayInterval) * 100, 100);
-      this.progressBar.style.width = `${pct}%`;
+      const percent = Math.min((elapsed / this.autoPlayInterval) * 100, 100);
+      this.progressBar.style.width = `${percent}%`;
       if (elapsed >= this.autoPlayInterval) {
         clearInterval(this.progressTimer);
       }
