@@ -2,98 +2,126 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <meta name="theme-color" content="#0a0c10" />
-  <title>5Bpage | Interactive Multimedia</title>
+  <title>5Bpage | 5 Bridges of Multimedia Interaction</title>
 
-  <!-- PWA & Favicon Link -->
   <link rel="manifest" href="./manifest.json" />
   <link rel="icon" type="image/png" sizes="32x32" href="./images/icon/favicon-32x32.png" />
-  
   <link rel="stylesheet" href="./css/style.css" />
 </head>
 <body>
-  <!-- Sound Controller Widget -->
+  <!-- Sound Dock: Ambient BGM & Synthesizer -->
   <aside id="audio-dock" class="audio-dock" aria-label="사운드 컨트롤러">
-    <button id="btn-sound-toggle" class="sound-toggle-btn" aria-label="사운드 켜기/끄기">
-      <span class="icon-sound">🔊</span>
+    <button id="btn-sound-toggle" class="sound-toggle-btn" aria-label="BGM 재생/음소거">
+      <span class="icon-sound">🎵</span>
       <div class="sound-bars">
-        <span class="bar"></span><span class="bar"></span><span class="bar"></span><span class="bar"></span>
+        <span class="bar"></span>
+        <span class="bar"></span>
+        <span class="bar"></span>
+        <span class="bar"></span>
       </div>
     </button>
     <div class="audio-info">
-      <span class="audio-title">Web Audio Synth</span>
-      <span class="audio-status">터치/클릭 시 활성화</span>
+      <span class="audio-title">5B Procedural Ambient</span>
+      <span class="audio-status" id="audio-status-label">터치하여 음악 켜기</span>
     </div>
   </aside>
 
-  <!-- Navigation Header -->
+  <!-- Main Navigation -->
   <header id="main-header" class="main-header">
     <div class="header-container">
       <a href="#hero-section" class="logo">5B<span>PAGE</span></a>
-      <nav class="nav-menu">
-        <a href="#hero-section" class="nav-link active">Home</a>
-        <a href="#slider-section" class="nav-link">Slider</a>
-        <a href="#puzzle-section" class="nav-link">Puzzle</a>
+      <nav class="nav-menu" id="nav-menu">
+        <a href="#hero-section" class="nav-link active">01 Bloom</a>
+        <a href="#slider-section" class="nav-link">02-04 5B Story</a>
+        <a href="#puzzle-section" class="nav-link">05 Brain</a>
       </nav>
+      <button class="menu-toggle" id="btn-menu-toggle" aria-label="메뉴 열기">
+        <span></span><span></span><span></span>
+      </button>
     </div>
   </header>
 
   <main>
-    <!-- Hero Canvas Section -->
+    <!-- 1. Bloom: Interactive Canvas Hero -->
     <section id="hero-section" class="section hero-section">
       <canvas id="hero-canvas"></canvas>
       <div class="hero-content">
-        <p class="hero-sub">Pure Vanilla JS Architecture</p>
-        <h1 class="hero-title">SOUND. MOTION.<br />INTERACTION.</h1>
-        <p class="hero-desc">외부 라이브러리 없이 구현된 고성능 인터랙티브 인터페이스와 오디오 동기화</p>
-        <a href="#slider-section" class="btn-cta">체험 시작하기</a>
+        <span class="badge">THE 5B PHILOSOPHY</span>
+        <h1 class="hero-title">FIVE BRIDGES<br />OF INTERACTION</h1>
+        <p class="hero-desc">
+          <strong>Beat, Bloom, Blend, Brain, Beyond</strong><br />
+          외부 라이브러리 없이 순수 바닐라 스크립트로 구축한 5차원 멀티미디어 인터랙티브 웹
+        </p>
+        <div class="hero-cta-group">
+          <a href="#slider-section" class="btn-cta">5B 익스피리언스 탐색</a>
+          <a href="#puzzle-section" class="btn-sub">Brain 퍼즐 도전</a>
+        </div>
       </div>
     </section>
 
-    <!-- Visual Sync Slider Section -->
+    <!-- 2. Blend & Beat: 5B Concept Synchronized Slider -->
     <section id="slider-section" class="section slider-section">
       <div class="section-header">
-        <span class="badge">CUSTOM SLIDER</span>
-        <h2>Audio-Visual Sync</h2>
-        <p>슬라이드 전환 애니메이션과 실시간 주파수 신디사이저가 결합되어 작동합니다.</p>
+        <span class="badge">MULTIMEDIA SYNC SLIDER</span>
+        <h2>5B Core Concepts</h2>
+        <p>각 슬라이드는 고유한 Web Audio 주파수 신호와 동기화되어 전환됩니다.</p>
       </div>
 
       <div class="slider-wrapper" id="main-slider">
         <div class="slider-track" id="slider-track">
-          <article class="slide-item active" data-sound-pitch="440">
-            <div class="slide-card">
-              <div class="slide-bg grad-1"></div>
-              <div class="slide-text">
-                <h3>01 / Precision Slider</h3>
-                <p>터치 스와이프, 마우스 드래그, 키보드를 완벽히 지원하는 제로 디펜던시 슬라이더 모듈.</p>
+          <!-- 1B: Beat -->
+          <article class="slide-item active" data-index="0" data-sound-pitch="329.63">
+            <div class="slide-card grad-beat">
+              <div class="slide-content">
+                <span class="slide-tag">1B / BEAT</span>
+                <h3>Generative Web Audio</h3>
+                <p>외부 MP3 없이 Web Audio API 기반 오실레이터와 화음 알고리즘으로 생성되는 무저작권 실시간 앰비언트 BGM.</p>
               </div>
             </div>
           </article>
-          <article class="slide-item" data-sound-pitch="554.37">
-            <div class="slide-card">
-              <div class="slide-bg grad-2"></div>
-              <div class="slide-text">
-                <h3>02 / Web Audio API</h3>
-                <p>외부 mp3 파일 없이도 Web Audio API를 활용해 즉각적인 인터랙션 사운드를 생성합니다.</p>
+
+          <!-- 2B: Bloom -->
+          <article class="slide-item" data-index="1" data-sound-pitch="392.00">
+            <div class="slide-card grad-bloom">
+              <div class="slide-content">
+                <span class="slide-tag">2B / BLOOM</span>
+                <h3>Visual Particle Motion</h3>
+                <p>60FPS 애니메이션 루프와 모바일 터치 반발력을 연산하는 캔버스 파티클 네트워크 렌더링.</p>
               </div>
             </div>
           </article>
-          <article class="slide-item" data-sound-pitch="659.25">
-            <div class="slide-card">
-              <div class="slide-bg grad-3"></div>
-              <div class="slide-text">
-                <h3>03 / Service Worker Caching</h3>
-                <p>Cache API를 활용하여 네트워크 연결이 불안정해도 온전한 오프라인 웹앱 구동 보장.</p>
+
+          <!-- 3B: Blend -->
+          <article class="slide-item" data-index="2" data-sound-pitch="440.00">
+            <div class="slide-card grad-blend">
+              <div class="slide-content">
+                <span class="slide-tag">3B / BLEND</span>
+                <h3>Zero-Dependency Slider</h3>
+                <p>스와이프 제스처, 포인터 드래그, 키보드 네비게이션이 유기적으로 결합된 커스텀 터치 엔진.</p>
               </div>
             </div>
           </article>
-          <article class="slide-item" data-sound-pitch="880">
-            <div class="slide-card">
-              <div class="slide-bg grad-4"></div>
-              <div class="slide-text">
-                <h3>04 / Zero Dependency</h3>
-                <p>번들 오버헤드를 완전히 배제하고 60FPS의 매끄러운 렌더링 파이프라인 유지.</p>
+
+          <!-- 4B: Brain -->
+          <article class="slide-item" data-index="3" data-sound-pitch="523.25">
+            <div class="slide-card grad-brain">
+              <div class="slide-content">
+                <span class="slide-tag">4B / BRAIN</span>
+                <h3>Algorithmic Challenge</h3>
+                <p>수학적 치환 패리티를 검증하여 100% 클리어 가능한 무작위 셔플 상태를 형성하는 슬라이딩 타일 퍼즐.</p>
+              </div>
+            </div>
+          </article>
+
+          <!-- 5B: Beyond -->
+          <article class="slide-item" data-index="4" data-sound-pitch="659.25">
+            <div class="slide-card grad-beyond">
+              <div class="slide-content">
+                <span class="slide-tag">5B / BEYOND</span>
+                <h3>Offline-First PWA</h3>
+                <p>Service Worker Cache API를 탑재하여 오프라인 환경에서도 온전히 구동되는 독립형 웹 애플리케이션.</p>
               </div>
             </div>
           </article>
@@ -108,31 +136,31 @@
       </div>
     </section>
 
-    <!-- Mini Puzzle Section -->
+    <!-- 3. Brain: 8-Puzzle Challenge -->
     <section id="puzzle-section" class="section puzzle-section">
       <div class="section-header">
-        <span class="badge">INTERACTIVE GAME</span>
-        <h2>Sliding Tile Challenge</h2>
-        <p>수학적으로 완성 가능한(Solvable) 무작위 셔플 엔진과 기계식 음향 효과</p>
+        <span class="badge">INTERACTIVE ENGINE</span>
+        <h2>4B Brain: Sliding Tile</h2>
+        <p>기계식 오디오 피드백과 모바일 터치 제스처에 즉각 반응하는 100% Solvable 퍼즐 엔진</p>
       </div>
 
       <div class="puzzle-container">
         <div class="puzzle-stats">
-          <div>이동 횟수: <span id="puzzle-moves">0</span></div>
-          <div>경과 시간: <span id="puzzle-timer">00:00</span></div>
+          <div class="stat-box">이동: <span id="puzzle-moves" class="highlight">0</span></div>
+          <div class="stat-box">시간: <span id="puzzle-timer" class="highlight">00:00</span></div>
           <button id="btn-puzzle-reset" class="btn-reset">다시 섞기</button>
         </div>
-        <div id="puzzle-board" class="puzzle-board" style="--grid-size: 3;"></div>
-        <p id="puzzle-message" class="puzzle-message"></p>
+        <div id="puzzle-board" class="puzzle-board" aria-label="슬라이딩 퍼즐 판"></div>
+        <div id="puzzle-message" class="puzzle-message" role="alert"></div>
       </div>
     </section>
   </main>
 
   <footer class="main-footer">
-    <p>© 5Bpage Architecture. Engineered with Vanilla JavaScript.</p>
+    <p>© 2026 5Bpage Architecture. Beat · Bloom · Blend · Brain · Beyond.</p>
   </footer>
 
-  <!-- 스크립트 로드: 폴더 대소문자 주의 (깃허브 디렉터리와 동일하게 작성) -->
+  <!-- Scripts -->
   <script src="./js/soundCtrl.js"></script>
   <script src="./js/hero.js"></script>
   <script src="./js/slide.js"></script>
