@@ -1,9 +1,8 @@
 /**
  * 1B Beat: 100% Procedural Web Audio Engine
- * - Zero External Audio Files (No Copyright / Royalty Free)
- * - Infinite Ambient Beat Sequencer
- * - Tactile Mechanical Plastic Click Generator
- * - Interactive Pitch Synthesis
+ * - Zero External MP3 (No Copyright Issues)
+ * - Real-time Ambient Synthesizer Loop
+ * - Tactile Mechanical Tile Click Audio
  */
 class SoundController {
   constructor() {
@@ -17,7 +16,6 @@ class SoundController {
     this.statusText = document.getElementById('audio-status-text');
     this.bgmStreamBtn = document.getElementById('btn-bgm-stream');
 
-    // Synth Chords (Am -> F -> C -> G)
     this.chords = [
       [220.00, 261.63, 329.63], // A3, C4, E4
       [174.61, 220.00, 261.63], // F3, A3, C4
@@ -32,9 +30,8 @@ class SoundController {
     this.dock?.addEventListener('click', () => this.toggleBgm());
     this.bgmStreamBtn?.addEventListener('click', () => this.toggleBgm());
 
-    // Beat Pad Click Events
     document.querySelectorAll('.pad-btn').forEach(btn => {
-      btn.addEventListener('click', (e) => {
+      btn.addEventListener('click', () => {
         this.ensureContext();
         const note = parseFloat(btn.getAttribute('data-note'));
         btn.classList.add('active');
@@ -43,7 +40,6 @@ class SoundController {
       });
     });
 
-    // Auto-unlock AudioContext on first gesture
     const unlock = () => {
       this.ensureContext();
       window.removeEventListener('pointerdown', unlock);
@@ -52,9 +48,8 @@ class SoundController {
     window.addEventListener('pointerdown', unlock);
     window.addEventListener('keydown', unlock);
 
-    // Event Bus Listeners
     window.addEventListener('app:slide-change', (e) => {
-      this.playTone(e.detail?.pitch || 440, 'sine', 0.2, 0.05);
+      this.playTone(e.detail?.pitch || 440, 'sine', 0.22, 0.06);
     });
 
     window.addEventListener('app:puzzle-move', () => {
@@ -92,8 +87,8 @@ class SoundController {
       this.playTone(523.25, 'sine', 0.15, 0.08);
     } else {
       this.dock?.classList.remove('playing');
-      if (this.statusText) this.statusText.textContent = 'Muted';
-      if (this.bgmStreamBtn) this.bgmStreamBtn.textContent = '비트 시퀀서 무한 루프 시작';
+      if (this.statusText) this.statusText.textContent = 'Muted (터치하여 재생)';
+      if (this.bgmStreamBtn) this.bgmStreamBtn.textContent = '비트 시퀀서 루프 시작';
       this.stopLoop();
     }
   }
@@ -107,10 +102,8 @@ class SoundController {
       const chord = this.chords[chordIdx];
       const freq = chord[this.step % chord.length];
 
-      // Play soft arpeggio
       this.playTone(freq, 'sine', 0.4, 0.035);
 
-      // Bass beat on measure start
       if (this.step % 4 === 0) {
         this.playTone(chord[0] / 2, 'triangle', 0.8, 0.05);
       }
@@ -132,7 +125,6 @@ class SoundController {
       const osc = this.audioCtx.createOscillator();
       const gain = this.audioCtx.createGain();
 
-      // Sharp pitch sweep simulates physical tile click
       osc.type = 'triangle';
       osc.frequency.setValueAtTime(320, now);
       osc.frequency.exponentialRampToValueAtTime(30, now + 0.035);
