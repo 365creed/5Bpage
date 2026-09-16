@@ -36,7 +36,7 @@ class NavigationMenu {
 
       let currentId = '';
       this.sections.forEach(sec => {
-        const top = sec.offsetTop - 180;
+        const top = sec.offsetTop - 200;
         if (scrollY >= top && scrollY < top + sec.offsetHeight) {
           currentId = sec.getAttribute('id');
         }
