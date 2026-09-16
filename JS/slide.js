@@ -131,7 +131,7 @@ class InteractiveSlider {
     const note = activeSlide.getAttribute('data-note') || 'C4';
     const color = activeSlide.getAttribute('data-color') || '#00f2fe';
 
-    // Broadcast state shift to system
+    // Broadcast state shift
     window.dispatchEvent(new CustomEvent('5b:harmonic-shift', {
       detail: { note, freq: pitch, color, source: '3B Beam', slideIndex: this.currentIndex }
     }));
