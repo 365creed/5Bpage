@@ -10,17 +10,17 @@
   <link rel="stylesheet" href="./css/style.css" />
 </head>
 <body>
-  <!-- 1B Beat Floating Audio Dock -->
-  <aside id="audio-dock" class="audio-dock" aria-label="사운드 제어기">
-    <button id="btn-sound-toggle" class="sound-toggle-btn" type="button" aria-label="사운드 토글">
+  <!-- [1B Beat] Global Audio Visualizer Dock -->
+  <aside id="audio-dock" class="audio-dock" aria-label="오디오 신디사이저 제어기">
+    <div class="sound-toggle-btn" id="btn-sound-toggle">
       <span class="icon-sound">🎵</span>
       <div class="sound-bars">
-        <span class="bar"></span><span class="bar"></span><span class="bar"></span><span class="bar"></span>
+        <span class="bar"></span><span class="bar"></span><span class="bar"></span><span class="bar"></span><span class="bar"></span>
       </div>
-    </button>
+    </div>
     <div class="audio-info">
-      <span class="audio-title">1B Procedural Beat</span>
-      <span class="audio-status" id="audio-status-text">클릭/터치하여 사운드 켜기</span>
+      <span class="audio-title">1B Beat Sequencer</span>
+      <span class="audio-status" id="audio-status-text">클릭하여 사운드 켜기</span>
     </div>
   </aside>
 
@@ -49,12 +49,12 @@
         <span class="badge">2B • BREEZE (KINETIC CANVAS)</span>
         <h1 class="hero-title">FIVE BEATS.<br />ONE CANVAS.</h1>
         <p class="hero-desc">
-          외부 라이브러리 0% 순수 자바스크립트로 구현된 5대 인터랙티브 경험.<br />
-          화면을 클릭하거나 마우스/터치로 드래그하여 실시간 입자 물리 엔진을 조작해보세요.
+          라이브러리 0% 순수 바닐라 자바스크립트로 구현된 5대 인터랙티브 경험.<br />
+          화면을 클릭하거나 마우스/터치로 드래그하여 실시간 입자 척력 물리 엔진을 조작해보세요.
         </p>
         <div class="hero-actions">
-          <a href="#sec-beat" class="btn-primary">1B Beat 체험</a>
-          <a href="#sec-brain" class="btn-secondary">4B 퍼즐 풀기</a>
+          <a href="#sec-beat" class="btn-primary">1B Beat 사운드 시작</a>
+          <a href="#sec-brain" class="btn-secondary">4B 퍼즐 도전</a>
         </div>
       </div>
     </section>
@@ -62,12 +62,19 @@
     <!-- [1B] Beat: Procedural Audio Synthesizer -->
     <section id="sec-beat" class="section">
       <div class="section-header">
-        <span class="badge">1B • BEAT (SYNTHESIZER)</span>
+        <span class="badge">1B • BEAT (PROCEDURAL SYNTHESIZER)</span>
         <h2>Procedural Sound Sequencer</h2>
-        <p>외부 MP3 파일 저작권 없이 Web Audio API 오실레이터로만 실시간 합성되는 앰비언트 비트 패드입니다.</p>
+        <p>외부 MP3 파일 저작권 없이 Web Audio API 오실레이터로만 실시간 합성되는 앰비언트 비트 엔진입니다.</p>
       </div>
 
       <div class="beat-console">
+        <!-- Live Audio Equalizer Wave Animation Display -->
+        <div class="eq-display" id="eq-display">
+          <div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div>
+          <div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div>
+          <div class="eq-bar"></div><div class="eq-bar"></div>
+        </div>
+
         <div class="beat-pads">
           <button class="pad-btn" data-note="261.63" type="button"><span>C4</span>Synth</button>
           <button class="pad-btn" data-note="329.63" type="button"><span>E4</span>Synth</button>
@@ -75,7 +82,7 @@
           <button class="pad-btn" data-note="523.25" type="button"><span>C5</span>Lead</button>
         </div>
         <div class="beat-controls">
-          <button id="btn-bgm-stream" class="btn-primary" type="button">비트 시퀀서 루프 시작</button>
+          <button id="btn-bgm-stream" class="btn-primary pulse-btn" type="button">비트 시퀀서 루프 시작 (BGM ON)</button>
         </div>
       </div>
     </section>
@@ -200,31 +207,36 @@
       </div>
     </section>
 
-    <!-- [4B] Brain: Solvable 8-Tile Puzzle -->
+    <!-- [4B] Brain: Solvable 8-Tile Puzzle with Start Game Lifecycle -->
     <section id="sec-brain" class="section">
       <div class="section-header">
         <span class="badge">4B • BRAIN (SOLVABLE PUZZLE)</span>
         <h2>Mechanical 8-Tile Puzzle</h2>
-        <p>완성 상태에서 역추적 셔플하여 <strong>100% 해결 가능</strong>하며, 마우스 클릭과 터치 모두 즉시 반응합니다.</p>
+        <p><strong>[게임 시작]</strong>을 누르면 완성 상태에서 역방향 셔플이 실행되어 <strong>100% 풀 수 있는 퍼즐</strong>이 생성됩니다. 움직일 수 있는 타일을 마우스나 터치로 눌러 빈칸으로 이동시키세요.</p>
       </div>
 
       <div class="puzzle-container">
         <div class="puzzle-stats">
           <div class="stat-box">이동: <span id="puzzle-moves">0</span></div>
           <div class="stat-box">시간: <span id="puzzle-timer">00:00</span></div>
-          <button id="btn-puzzle-reset" class="btn-reset" type="button">다시 섞기</button>
+          <button id="btn-puzzle-start" class="btn-primary" type="button">🎮 게임 시작</button>
         </div>
-        <div id="puzzle-board" class="puzzle-board"></div>
+        <div class="puzzle-board-wrapper">
+          <div id="puzzle-board" class="puzzle-board"></div>
+          <div id="puzzle-overlay" class="puzzle-overlay">
+            <p>버튼을 눌러 퍼즐을 섞고 시작하세요</p>
+          </div>
+        </div>
         <div id="puzzle-message" class="puzzle-message"></div>
       </div>
     </section>
 
-    <!-- [5B] Byte: PWA Engine & Inspector -->
+    <!-- [5B] Byte: PWA Engine & Desktop/Mobile Install Inspector -->
     <section id="sec-byte" class="section">
       <div class="section-header">
-        <span class="badge">5B • BYTE (PWA & OFFLINE)</span>
-        <h2>PWA Engine & Cache Inspector</h2>
-        <p>웹앱 설치 배너 및 오프라인 상태 감지, Service Worker 캐시 진단 콘솔입니다.</p>
+        <span class="badge">5B • BYTE (PWA & OFFLINE ENGINE)</span>
+        <h2>PWA Engine & Install Inspector</h2>
+        <p>데스크톱(Chrome/Edge) 및 모바일 브라우저에서 독립형 웹앱으로 설치하여 오프라인에서도 사용할 수 있습니다.</p>
       </div>
 
       <div class="pwa-dashboard">
@@ -235,12 +247,13 @@
           </div>
           <div class="pwa-meta">
             <div>서비스 워커: <strong id="sw-status">확인 중</strong></div>
-            <div>디스플레이 모드: <strong id="display-mode">브라우저 탭</strong></div>
+            <div>실행 모드: <strong id="display-mode">브라우저 탭</strong></div>
           </div>
           <div class="pwa-actions">
-            <button id="btn-pwa-install" class="btn-primary" type="button" disabled>웹앱 설치하기 (Install)</button>
-            <button id="btn-clear-cache" class="btn-secondary" type="button">캐시 재동기화</button>
+            <button id="btn-pwa-install" class="btn-primary" type="button">💻 PC / 모바일 앱 설치하기</button>
+            <button id="btn-clear-cache" class="btn-secondary" type="button">캐시 새로고침</button>
           </div>
+          <div id="install-guide" class="install-guide"></div>
         </div>
       </div>
     </section>
