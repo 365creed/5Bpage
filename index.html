@@ -2,162 +2,189 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <meta name="theme-color" content="#0a0c10" />
-  <title>5Bpage | 5 Bridges of Multimedia Interaction</title>
-
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
+  <meta name="theme-color" content="#08090d" />
+  <title>5Bpage | 5-Dimension Web Architecture</title>
   <link rel="manifest" href="./manifest.json" />
   <link rel="icon" type="image/png" sizes="32x32" href="./images/icon/favicon-32x32.png" />
   <link rel="stylesheet" href="./css/style.css" />
 </head>
 <body>
-  <!-- Sound Dock: Ambient BGM & Synthesizer -->
-  <aside id="audio-dock" class="audio-dock" aria-label="사운드 컨트롤러">
-    <button id="btn-sound-toggle" class="sound-toggle-btn" aria-label="BGM 재생/음소거">
+  <!-- Global Procedural Audio Dock -->
+  <aside id="audio-dock" class="audio-dock" aria-label="오디오 제어기">
+    <button id="btn-sound-toggle" class="sound-toggle-btn" type="button" aria-label="사운드 재생/음소거">
       <span class="icon-sound">🎵</span>
       <div class="sound-bars">
-        <span class="bar"></span>
-        <span class="bar"></span>
-        <span class="bar"></span>
-        <span class="bar"></span>
+        <span class="bar"></span><span class="bar"></span><span class="bar"></span><span class="bar"></span>
       </div>
     </button>
     <div class="audio-info">
-      <span class="audio-title">5B Procedural Ambient</span>
-      <span class="audio-status" id="audio-status-label">터치하여 음악 켜기</span>
+      <span class="audio-title">1B Procedural Beat</span>
+      <span class="audio-status" id="audio-status-text">클릭/터치하여 사운드 켜기</span>
     </div>
   </aside>
 
-  <!-- Main Navigation -->
+  <!-- Navigation -->
   <header id="main-header" class="main-header">
     <div class="header-container">
-      <a href="#hero-section" class="logo">5B<span>PAGE</span></a>
+      <a href="#sec-breeze" class="logo">5B<span>PAGE</span></a>
       <nav class="nav-menu" id="nav-menu">
-        <a href="#hero-section" class="nav-link active">01 Bloom</a>
-        <a href="#slider-section" class="nav-link">02-04 5B Story</a>
-        <a href="#puzzle-section" class="nav-link">05 Brain</a>
+        <a href="#sec-breeze" class="nav-link active">2B Breeze</a>
+        <a href="#sec-beat" class="nav-link">1B Beat</a>
+        <a href="#sec-beam" class="nav-link">3B Beam</a>
+        <a href="#sec-brain" class="nav-link">4B Brain</a>
+        <a href="#sec-byte" class="nav-link">5B Byte</a>
       </nav>
-      <button class="menu-toggle" id="btn-menu-toggle" aria-label="메뉴 열기">
+      <button class="menu-toggle" id="btn-menu-toggle" type="button" aria-label="메뉴 토글">
         <span></span><span></span><span></span>
       </button>
     </div>
   </header>
 
   <main>
-    <!-- 1. Bloom: Interactive Canvas Hero -->
-    <section id="hero-section" class="section hero-section">
+    <!-- [2B] Breeze: Kinetic Particle Canvas -->
+    <section id="sec-breeze" class="section hero-section">
       <canvas id="hero-canvas"></canvas>
       <div class="hero-content">
-        <span class="badge">THE 5B PHILOSOPHY</span>
-        <h1 class="hero-title">FIVE BRIDGES<br />OF INTERACTION</h1>
+        <span class="badge">2B • BREEZE (PHYSICS CANVAS)</span>
+        <h1 class="hero-title">KINETIC MOTION<br />CANVAS</h1>
         <p class="hero-desc">
-          <strong>Beat, Bloom, Blend, Brain, Beyond</strong><br />
-          외부 라이브러리 없이 순수 바닐라 스크립트로 구축한 5차원 멀티미디어 인터랙티브 웹
+          화면을 클릭하거나 모바일로 드래그하여 실시간 입자 척력 및 연결망 물리 엔진을 경험하세요.
         </p>
-        <div class="hero-cta-group">
-          <a href="#slider-section" class="btn-cta">5B 익스피리언스 탐색</a>
-          <a href="#puzzle-section" class="btn-sub">Brain 퍼즐 도전</a>
+        <div class="hero-actions">
+          <a href="#sec-beat" class="btn-primary">1B Beat 사운드 체험</a>
+          <a href="#sec-brain" class="btn-secondary">4B 퍼즐 풀기</a>
         </div>
       </div>
     </section>
 
-    <!-- 2. Blend & Beat: 5B Concept Synchronized Slider -->
-    <section id="slider-section" class="section slider-section">
+    <!-- [1B] Beat: Procedural Audio Synthesizer & Beat Pad -->
+    <section id="sec-beat" class="section">
       <div class="section-header">
-        <span class="badge">MULTIMEDIA SYNC SLIDER</span>
-        <h2>5B Core Concepts</h2>
-        <p>각 슬라이드는 고유한 Web Audio 주파수 신호와 동기화되어 전환됩니다.</p>
+        <span class="badge">1B • BEAT (AUDIO SYNTHESIS)</span>
+        <h2>Procedural Sound Synthesizer</h2>
+        <p>외부 음원(MP3) 저작권 없이 Web Audio API 오실레이터만으로 합성된 앰비언트 비트 패드입니다.</p>
+      </div>
+
+      <div class="beat-console">
+        <div class="beat-pads">
+          <button class="pad-btn" data-note="261.63" type="button"><span>C4</span>Synth</button>
+          <button class="pad-btn" data-note="329.63" type="button"><span>E4</span>Synth</button>
+          <button class="pad-btn" data-note="392.00" type="button"><span>G4</span>Synth</button>
+          <button class="pad-btn" data-note="523.25" type="button"><span>C5</span>Lead</button>
+        </div>
+        <div class="beat-controls">
+          <button id="btn-bgm-stream" class="btn-primary" type="button">비트 시퀀서 무한 루프 시작</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- [3B] Beam: Robust Touch/Mouse Synchronized Slider -->
+    <section id="sec-beam" class="section">
+      <div class="section-header">
+        <span class="badge">3B • BEAM (MULTIMEDIA SLIDER)</span>
+        <h2>Cross-Platform Visual Slider</h2>
+        <p>마우스 드래그, 좌우 버튼, 모바일 터치 스와이프를 모두 지원하며 슬라이드마다 음계를 연주합니다.</p>
       </div>
 
       <div class="slider-wrapper" id="main-slider">
         <div class="slider-track" id="slider-track">
-          <!-- 1B: Beat -->
-          <article class="slide-item active" data-index="0" data-sound-pitch="329.63">
-            <div class="slide-card grad-beat">
-              <div class="slide-content">
-                <span class="slide-tag">1B / BEAT</span>
-                <h3>Generative Web Audio</h3>
-                <p>외부 MP3 없이 Web Audio API 기반 오실레이터와 화음 알고리즘으로 생성되는 무저작권 실시간 앰비언트 BGM.</p>
+          <article class="slide-item" data-pitch="329.63">
+            <div class="slide-card grad-1">
+              <div class="slide-text">
+                <span class="slide-tag">E4 Tone • Slide 01</span>
+                <h3>Kinetic Drag & Touch</h3>
+                <p>PC 마우스 좌우 드래그 및 스마트폰 제스처에 즉각적으로 반응하는 픽셀 트래커.</p>
               </div>
             </div>
           </article>
-
-          <!-- 2B: Bloom -->
-          <article class="slide-item" data-index="1" data-sound-pitch="392.00">
-            <div class="slide-card grad-bloom">
-              <div class="slide-content">
-                <span class="slide-tag">2B / BLOOM</span>
-                <h3>Visual Particle Motion</h3>
-                <p>60FPS 애니메이션 루프와 모바일 터치 반발력을 연산하는 캔버스 파티클 네트워크 렌더링.</p>
+          <article class="slide-item" data-pitch="392.00">
+            <div class="slide-card grad-2">
+              <div class="slide-text">
+                <span class="slide-tag">G4 Tone • Slide 02</span>
+                <h3>Audio-Visual Frequency</h3>
+                <p>슬라이드가 이동할 때마다 실시간 주파수를 브로드캐스트하여 오디오 피드백을 전달합니다.</p>
               </div>
             </div>
           </article>
-
-          <!-- 3B: Blend -->
-          <article class="slide-item" data-index="2" data-sound-pitch="440.00">
-            <div class="slide-card grad-blend">
-              <div class="slide-content">
-                <span class="slide-tag">3B / BLEND</span>
-                <h3>Zero-Dependency Slider</h3>
-                <p>스와이프 제스처, 포인터 드래그, 키보드 네비게이션이 유기적으로 결합된 커스텀 터치 엔진.</p>
+          <article class="slide-item" data-pitch="440.00">
+            <div class="slide-card grad-3">
+              <div class="slide-text">
+                <span class="slide-tag">A4 Tone • Slide 03</span>
+                <h3>Hardware Accelerated</h3>
+                <p>CSS GPU 가속을 적용하여 리플로우(Reflow) 없는 60FPS 모션을 보장합니다.</p>
               </div>
             </div>
           </article>
-
-          <!-- 4B: Brain -->
-          <article class="slide-item" data-index="3" data-sound-pitch="523.25">
-            <div class="slide-card grad-brain">
-              <div class="slide-content">
-                <span class="slide-tag">4B / BRAIN</span>
-                <h3>Algorithmic Challenge</h3>
-                <p>수학적 치환 패리티를 검증하여 100% 클리어 가능한 무작위 셔플 상태를 형성하는 슬라이딩 타일 퍼즐.</p>
-              </div>
-            </div>
-          </article>
-
-          <!-- 5B: Beyond -->
-          <article class="slide-item" data-index="4" data-sound-pitch="659.25">
-            <div class="slide-card grad-beyond">
-              <div class="slide-content">
-                <span class="slide-tag">5B / BEYOND</span>
-                <h3>Offline-First PWA</h3>
-                <p>Service Worker Cache API를 탑재하여 오프라인 환경에서도 온전히 구동되는 독립형 웹 애플리케이션.</p>
+          <article class="slide-item" data-pitch="523.25">
+            <div class="slide-card grad-4">
+              <div class="slide-text">
+                <span class="slide-tag">C5 Tone • Slide 04</span>
+                <h3>Zero Third-Party Library</h3>
+                <p>외부 플러그인(Swiper 등) 의존 없이 100% 바닐라 자바스크립트로 구현된 안정적 코어.</p>
               </div>
             </div>
           </article>
         </div>
 
         <div class="slider-nav">
-          <button class="slide-btn prev" id="btn-slide-prev" aria-label="이전 슬라이드">❮</button>
+          <button class="slide-btn" id="btn-slide-prev" type="button" aria-label="이전 슬라이드">❮</button>
           <div class="slider-indicators" id="slider-indicators"></div>
-          <button class="slide-btn next" id="btn-slide-next" aria-label="다음 슬라이드">❯</button>
+          <button class="slide-btn" id="btn-slide-next" type="button" aria-label="다음 슬라이드">❯</button>
         </div>
         <div class="slider-progress-bar"><div class="progress-fill" id="slide-progress"></div></div>
       </div>
     </section>
 
-    <!-- 3. Brain: 8-Puzzle Challenge -->
-    <section id="puzzle-section" class="section puzzle-section">
+    <!-- [4B] Brain: 100% Solvable 8-Tile Sliding Puzzle -->
+    <section id="sec-brain" class="section">
       <div class="section-header">
-        <span class="badge">INTERACTIVE ENGINE</span>
-        <h2>4B Brain: Sliding Tile</h2>
-        <p>기계식 오디오 피드백과 모바일 터치 제스처에 즉각 반응하는 100% Solvable 퍼즐 엔진</p>
+        <span class="badge">4B • BRAIN (SOLVABLE PUZZLE)</span>
+        <h2>Mechanical 8-Tile Puzzle</h2>
+        <p>완성 상태에서 역추적 셔플하여 <strong>100% 해결 가능</strong>하며, 마우스 클릭과 터치 모두 즉각 작동합니다.</p>
       </div>
 
       <div class="puzzle-container">
         <div class="puzzle-stats">
-          <div class="stat-box">이동: <span id="puzzle-moves" class="highlight">0</span></div>
-          <div class="stat-box">시간: <span id="puzzle-timer" class="highlight">00:00</span></div>
-          <button id="btn-puzzle-reset" class="btn-reset">다시 섞기</button>
+          <div class="stat-box">이동: <span id="puzzle-moves">0</span></div>
+          <div class="stat-box">시간: <span id="puzzle-timer">00:00</span></div>
+          <button id="btn-puzzle-reset" class="btn-reset" type="button">다시 섞기</button>
         </div>
-        <div id="puzzle-board" class="puzzle-board" aria-label="슬라이딩 퍼즐 판"></div>
-        <div id="puzzle-message" class="puzzle-message" role="alert"></div>
+        <div id="puzzle-board" class="puzzle-board"></div>
+        <div id="puzzle-message" class="puzzle-message"></div>
+      </div>
+    </section>
+
+    <!-- [5B] Byte: PWA Install & Offline Console -->
+    <section id="sec-byte" class="section">
+      <div class="section-header">
+        <span class="badge">5B • BYTE (PWA & OFFLINE ENGINE)</span>
+        <h2>PWA Engine & Cache Inspector</h2>
+        <p>웹앱 설치 배너 실행 및 오프라인 상태 감지, Service Worker 캐시 진단 콘솔입니다.</p>
+      </div>
+
+      <div class="pwa-dashboard">
+        <div class="pwa-status-card">
+          <div class="status-indicator">
+            <span class="status-dot" id="network-dot"></span>
+            <span id="network-text">네트워크 연결 확인 중...</span>
+          </div>
+          <div class="pwa-meta">
+            <div>서비스 워커: <strong id="sw-status">확인 중</strong></div>
+            <div>디스플레이 모드: <strong id="display-mode">브라우저 탭</strong></div>
+          </div>
+          <div class="pwa-actions">
+            <button id="btn-pwa-install" class="btn-primary" type="button" disabled>웹앱 설치하기 (Install)</button>
+            <button id="btn-clear-cache" class="btn-secondary" type="button">캐시 재동기화</button>
+          </div>
+        </div>
       </div>
     </section>
   </main>
 
   <footer class="main-footer">
-    <p>© 2026 5Bpage Architecture. Beat · Bloom · Blend · Brain · Beyond.</p>
+    <p><strong>5Bpage Architecture</strong> — Beat • Breeze • Beam • Brain • Byte</p>
+    <p class="copyright">Engineered with 100% Vanilla JavaScript.</p>
   </footer>
 
   <!-- Scripts -->
