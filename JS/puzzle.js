@@ -1,15 +1,17 @@
 /**
- * Sliding Tile Puzzle Module
- * Solvable check, move count, timer, and Sound Event dispatching
+ * 5Bpage Sliding Tile Puzzle Engine
+ * - 100% Solvable Guarantee via Valid-Move Random Walk Shuffle
+ * - Fluid Mobile Touch & Click Binding
+ * - Timer, Move Counter, and Audio Event Dispatcher
  */
 class SlidingPuzzle {
-  constructor(boardId, size = 3) {
+  constructor(boardId) {
     this.board = document.getElementById(boardId);
     if (!this.board) return;
 
-    this.size = size;
-    this.totalTiles = size * size;
-    this.tiles = [];
+    this.size = 3;
+    this.totalTiles = 9;
+    this.tiles = [1, 2, 3, 4, 5, 6, 7, 8, 0]; // 0 is blank
     this.moves = 0;
     this.timerSeconds = 0;
     this.timerInterval = null;
@@ -25,6 +27,24 @@ class SlidingPuzzle {
 
   init() {
     this.resetBtn?.addEventListener('click', () => this.startNewGame());
+
+    // Keyboard Arrow Control Support
+    window.addEventListener('keydown', (e) => {
+      const emptyIdx = this.tiles.indexOf(0);
+      const row = Math.floor(emptyIdx / this.size);
+      const col = emptyIdx % this.size;
+
+      if (e.key === 'ArrowUp' && row < this.size - 1) {
+        this.moveTile(emptyIdx + this.size);
+      } else if (e.key === 'ArrowDown' && row > 0) {
+        this.moveTile(emptyIdx - this.size);
+      } else if (e.key === 'ArrowLeft' && col < this.size - 1) {
+        this.moveTile(emptyIdx + 1);
+      } else if (e.key === 'ArrowRight' && col > 0) {
+        this.moveTile(emptyIdx - 1);
+      }
+    });
+
     this.startNewGame();
   }
 
@@ -41,32 +61,46 @@ class SlidingPuzzle {
       this.updateStats();
     }, 1000);
 
-    this.tiles = this.generateSolvableTiles();
+    // 100% Solvable Guaranteed Shuffle
+    this.shuffleByValidMoves(80);
     this.render();
   }
 
-  generateSolvableTiles() {
-    let arr = Array.from({ length: this.totalTiles }, (_, i) => (i + 1) % this.totalTiles);
+  /**
+   * Shuffles by simulating legitimate tile moves from the solved state.
+   * Mathematically impossible to produce an unsolvable configuration.
+   */
+  shuffleByValidMoves(iterations = 80) {
+    this.tiles = [1, 2, 3, 4, 5, 6, 7, 8, 0];
+    let lastMoved = -1;
 
-    // Fisher-Yates Shuffle until solvable
-    do {
-      for (let i = arr.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [arr[i], arr[j]] = [arr[j], arr[i]];
-      }
-    } while (!this.isSolvable(arr) || this.checkVictory(arr));
+    for (let i = 0; i < iterations; i++) {
+      const emptyIdx = this.tiles.indexOf(0);
+      const neighbors = this.getValidNeighbors(emptyIdx).filter(idx => idx !== lastMoved);
+      const chosen = neighbors[Math.floor(Math.random() * neighbors.length)];
 
-    return arr;
+      // Swap
+      [this.tiles[emptyIdx], this.tiles[chosen]] = [this.tiles[chosen], this.tiles[emptyIdx]];
+      lastMoved = emptyIdx;
+    }
+
+    // Ensure it does not start in solved state
+    if (this.checkVictory()) {
+      this.shuffleByValidMoves(10);
+    }
   }
 
-  isSolvable(arr) {
-    let inversions = 0;
-    for (let i = 0; i < arr.length - 1; i++) {
-      for (let j = i + 1; j < arr.length; j++) {
-        if (arr[i] && arr[j] && arr[i] > arr[j]) inversions++;
-      }
-    }
-    return inversions % 2 === 0;
+  getValidNeighbors(index) {
+    const row = Math.floor(index / this.size);
+    const col = index % this.size;
+    const neighbors = [];
+
+    if (row > 0) neighbors.push(index - this.size); // Up
+    if (row < this.size - 1) neighbors.push(index + this.size); // Down
+    if (col > 0) neighbors.push(index - 1); // Left
+    if (col < this.size - 1) neighbors.push(index + 1); // Right
+
+    return neighbors;
   }
 
   render() {
@@ -74,56 +108,55 @@ class SlidingPuzzle {
     this.tiles.forEach((value, index) => {
       const tile = document.createElement('div');
       tile.classList.add('puzzle-tile');
+
       if (value === 0) {
         tile.classList.add('empty');
       } else {
         tile.textContent = value;
-        tile.addEventListener('click', () => this.handleTileClick(index));
+        // Pointer down handles both mobile touch and desktop click instantly
+        tile.addEventListener('pointerdown', (e) => {
+          e.preventDefault();
+          this.moveTile(index);
+        });
       }
       this.board.appendChild(tile);
     });
   }
 
-  handleTileClick(index) {
+  moveTile(index) {
     if (this.isSolved) return;
     const emptyIndex = this.tiles.indexOf(0);
+    const validMoves = this.getValidNeighbors(emptyIndex);
 
-    const row = Math.floor(index / this.size);
-    const col = index % this.size;
-    const emptyRow = Math.floor(emptyIndex / this.size);
-    const emptyCol = emptyIndex % this.size;
-
-    const isAdjacent = (Math.abs(row - emptyRow) + Math.abs(col - emptyCol)) === 1;
-
-    if (isAdjacent) {
-      // Swap tiles
+    if (validMoves.includes(index)) {
+      // Swap tile with blank
       [this.tiles[index], this.tiles[emptyIndex]] = [this.tiles[emptyIndex], this.tiles[index]];
       this.moves++;
       this.updateStats();
 
-      // Trigger Audio Event
+      // Trigger Mechanical Sound Effect
       window.dispatchEvent(new CustomEvent('app:puzzle-move'));
 
       this.render();
 
-      if (this.checkVictory(this.tiles)) {
+      if (this.checkVictory()) {
         this.handleVictory();
       }
     }
   }
 
-  checkVictory(arr) {
+  checkVictory() {
     for (let i = 0; i < this.totalTiles - 1; i++) {
-      if (arr[i] !== i + 1) return false;
+      if (this.tiles[i] !== i + 1) return false;
     }
-    return arr[this.totalTiles - 1] === 0;
+    return this.tiles[this.totalTiles - 1] === 0;
   }
 
   handleVictory() {
     this.isSolved = true;
     clearInterval(this.timerInterval);
     if (this.messageDisplay) {
-      this.messageDisplay.textContent = `🎉 퍼즐 완성! ${this.moves}회 이동 / ${this.formatTime(this.timerSeconds)}`;
+      this.messageDisplay.textContent = `🎉 4B Brain 미션 완료! (${this.moves}회 이동 / ${this.formatTime(this.timerSeconds)})`;
     }
     window.dispatchEvent(new CustomEvent('app:puzzle-win'));
   }
