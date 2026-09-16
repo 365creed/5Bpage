@@ -1,9 +1,5 @@
 /**
- * 1B Beat: Procedural Web Audio Synthesis Engine
- * - Zero External MP3 (No copyright/404 issues)
- * - Real-time Chords + Kick/Percussion Synthesizer
- * - Live Equalizer Animation Controller
- * - Tactile Mechanical Tile Click Audio
+ * 1B Beat: Web Audio Procedural Synthesis & State Broadcasting
  */
 class SoundController {
   constructor() {
@@ -18,19 +14,18 @@ class SoundController {
     this.bgmStreamBtn = document.getElementById('btn-bgm-stream');
     this.eqDisplay = document.getElementById('eq-display');
 
-    // Chords: Am -> F -> C -> G (Lo-Fi Ambient Progression)
+    // Progression: Am -> F -> C -> G
     this.chords = [
-      [220.00, 261.63, 329.63], // A3, C4, E4
-      [174.61, 220.00, 261.63], // F3, A3, C4
-      [130.81, 164.81, 196.00], // C3, E3, G3
-      [196.00, 246.94, 293.66]  // G3, B3, D4
+      [220.00, 261.63, 329.63],
+      [174.61, 220.00, 261.63],
+      [130.81, 164.81, 196.00],
+      [196.00, 246.94, 293.66]
     ];
 
     this.init();
   }
 
   init() {
-    // Single delegated toggle for Audio Dock
     this.dock?.addEventListener('click', (e) => {
       e.stopPropagation();
       this.toggleBgm();
@@ -46,14 +41,24 @@ class SoundController {
       btn.addEventListener('click', (e) => {
         e.stopPropagation();
         this.ensureContext();
-        const note = parseFloat(btn.getAttribute('data-note'));
+
+        const note = btn.getAttribute('data-note');
+        const freq = parseFloat(btn.getAttribute('data-freq'));
+        const color = btn.getAttribute('data-color');
+
         btn.classList.add('active');
         setTimeout(() => btn.classList.remove('active'), 150);
-        this.playTone(note, 'triangle', 0.45, 0.22);
+
+        this.playTone(freq, 'triangle', 0.5, 0.2);
+
+        // Broadcast state to Breeze, Beam, Brain, Byte
+        window.dispatchEvent(new CustomEvent('5b:harmonic-shift', {
+          detail: { note, freq, color, source: '1B Beat' }
+        }));
       });
     });
 
-    // Auto-unlock AudioContext on first gesture
+    // Unlock AudioContext on first gesture
     const unlock = () => {
       this.ensureContext();
       window.removeEventListener('pointerdown', unlock);
@@ -62,7 +67,7 @@ class SoundController {
     window.addEventListener('pointerdown', unlock);
     window.addEventListener('keydown', unlock);
 
-    // Event Bus Listeners
+    // Event Bus
     window.addEventListener('app:slide-change', (e) => {
       this.playTone(e.detail?.pitch || 440, 'sine', 0.25, 0.12);
     });
@@ -100,14 +105,19 @@ class SoundController {
       if (this.statusText) this.statusText.textContent = '🎵 BGM 재생 중 (Looping)';
       if (this.bgmStreamBtn) this.bgmStreamBtn.textContent = '비트 시퀀서 정지 (BGM OFF)';
       this.startLoop();
-      this.playTone(523.25, 'triangle', 0.2, 0.15); // Power-on sound
+      this.playTone(523.25, 'triangle', 0.2, 0.15);
     } else {
       this.dock?.classList.remove('playing');
       this.eqDisplay?.classList.remove('active');
       if (this.statusText) this.statusText.textContent = '음소거 (클릭하여 재생)';
-      if (this.bgmStreamBtn) this.bgmStreamBtn.textContent = '비트 시퀀서 루프 시작 (BGM ON)';
+      if (this.bgmStreamBtn) this.bgmStreamBtn.textContent = '🎵 비트 시퀀서 루프 시작 (BGM ON)';
       this.stopLoop();
     }
+
+    // Sync to Session
+    window.dispatchEvent(new CustomEvent('5b:session-update', {
+      detail: { beatPlaying: this.isBgmActive }
+    }));
   }
 
   startLoop() {
@@ -121,14 +131,11 @@ class SoundController {
       const chord = this.chords[chordIdx];
       const freq = chord[this.step % chord.length];
 
-      // Melodic Arpeggio Tone
       this.playTone(freq, 'sine', 0.45, 0.08);
 
-      // Procedural Bass Kick on Measure Start
       if (this.step % 4 === 0) {
         this.playSyntheticKick();
       }
-
       this.step++;
     }, 320);
   }
@@ -140,9 +147,6 @@ class SoundController {
     }
   }
 
-  /**
-   * Synthesize deep 808-style bass kick
-   */
   playSyntheticKick() {
     try {
       const now = this.audioCtx.currentTime;
@@ -162,9 +166,6 @@ class SoundController {
     } catch (_) {}
   }
 
-  /**
-   * Tactile Mechanical Tile Click Audio
-   */
   playMechanicalClick() {
     if (!this.isUnlocked || !this.audioCtx) return;
     try {
