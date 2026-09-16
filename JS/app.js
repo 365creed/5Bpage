@@ -1,12 +1,12 @@
 /**
  * 5B OS Master Engine
- * - Dynamic Theme Synchronization (Beat/Beam -> Entire Page & Breeze)
- * - 5B Session Live Aggregator & Web Share API
+ * - Dynamic Harmonic State Sync across 1B ~ 5B
+ * - 5B Session Live Aggregator & Viral Share API
  * - PWA Install Prompter & Offline Monitor
  */
 let deferredPrompt = null;
 
-// Global 5B Session State
+// Global 5B Session Object
 window.FiveBSession = {
   activeNote: 'C4',
   activeFreq: 261.63,
@@ -31,9 +31,6 @@ document.addEventListener('DOMContentLoaded', () => {
   initPwaEngine();
 });
 
-/**
- * 1. Reactive State Sync: Harmonic shift propagates to Theme Color across all modules
- */
 function init5BStateEngine() {
   window.addEventListener('5b:harmonic-shift', (e) => {
     const { note, freq, color, slideIndex } = e.detail;
@@ -61,9 +58,6 @@ function init5BStateEngine() {
   });
 }
 
-/**
- * 2. 5B Session Card & Viral Share API
- */
 function init5BSessionAndShare() {
   const shareBtn = document.getElementById('btn-share-session');
   const feedback = document.getElementById('share-feedback');
@@ -72,30 +66,30 @@ function init5BSessionAndShare() {
 
   shareBtn?.addEventListener('click', async () => {
     const sess = window.FiveBSession;
-    const timeStr = sess.brainSeconds ? `${Math.floor(sess.brainSeconds / 60)}m ${sess.brainSeconds % 60}s` : '--';
-    const brainStr = sess.brainSolved ? `${sess.brainMoves} moves (${timeStr})` : 'In Progress';
+    const timeStr = sess.brainSeconds ? `${Math.floor(sess.brainSeconds / 60)}분 ${sess.brainSeconds % 60}초` : '--';
+    const brainStr = sess.brainSolved ? `${sess.brainMoves}회 (${timeStr})` : '도전 전';
 
-    const shareData = {
-      title: '5B OS Interactive Session',
-      text: `🎵 My 5B Session Summary\n• Beat: ${sess.activeNote} (${sess.activeFreq}Hz)\n• Breeze: Kinetic Motion Active\n• Beam: Dimension ${sess.slideDimension}\n• Brain: ${brainStr}\n• Byte: 100% Offline PWA\n\nExperience 5B OS live:`,
-      url: window.location.href
-    };
+    const shareText = `🧠 5B OS 세션 결과\n• 사운드: ${sess.activeNote} (${sess.activeFreq}Hz)\n• 모션: Breeze Fluid Mesh\n• 퍼즐 기록: ${brainStr}\n\n직접 경험해보기: ${window.location.href}`;
 
     if (navigator.share) {
       try {
-        await navigator.share(shareData);
+        await navigator.share({
+          title: '5B OS Interactive Session',
+          text: shareText,
+          url: window.location.href
+        });
         if (feedback) feedback.textContent = '✓ 성공적으로 공유되었습니다!';
       } catch (err) {
-        copyToClipboard(shareData.text + ' ' + shareData.url);
+        copyToClipboard(shareText);
       }
     } else {
-      copyToClipboard(shareData.text + ' ' + shareData.url);
+      copyToClipboard(shareText);
     }
   });
 
   function copyToClipboard(text) {
     navigator.clipboard.writeText(text).then(() => {
-      if (feedback) feedback.textContent = '✓ 세션 결과 텍스트가 클립보드에 복사되었습니다!';
+      if (feedback) feedback.textContent = '✓ 결과 요약이 클립보드에 복사되었습니다!';
       setTimeout(() => { if (feedback) feedback.textContent = ''; }, 4000);
     });
   }
@@ -108,25 +102,22 @@ function updateSessionUI() {
   const brainEl = document.getElementById('sess-brain');
 
   if (beatEl) {
-    beatEl.textContent = `${sess.activeNote} (${sess.activeFreq}Hz) • ${sess.beatPlaying ? 'Looping' : 'Muted'}`;
+    beatEl.textContent = `${sess.activeNote} (${sess.activeFreq}Hz) • ${sess.beatPlaying ? 'Looping' : 'Idle'}`;
   }
   if (beamEl) {
-    beamEl.textContent = `Dimension ${sess.slideDimension} Active`;
+    beamEl.textContent = `${sess.slideDimension} Active`;
   }
   if (brainEl) {
     if (sess.brainSolved) {
       const mins = Math.floor(sess.brainSeconds / 60);
       const secs = sess.brainSeconds % 60;
-      brainEl.textContent = `완료! ${sess.brainMoves}회 이동 (${mins}분 ${secs}초)`;
+      brainEl.textContent = `완료! ${sess.brainMoves}회 (${mins}분 ${secs}초)`;
     } else {
-      brainEl.textContent = '도전 대기 중';
+      brainEl.textContent = '미완료 (퍼즐 도전 전)';
     }
   }
 }
 
-/**
- * 3. 5B Byte: PWA Engine & Desktop/Mobile Install Inspector
- */
 function initPwaEngine() {
   const installBtn = document.getElementById('btn-pwa-install');
   const clearCacheBtn = document.getElementById('btn-clear-cache');
@@ -136,58 +127,52 @@ function initPwaEngine() {
   const displayMode = document.getElementById('display-mode');
   const installGuide = document.getElementById('install-guide');
 
-  // Network Online/Offline
   const updateNet = () => {
     if (navigator.onLine) {
       netDot.classList.remove('offline');
       netText.textContent = '온라인 연결 상태 (Online)';
     } else {
       netDot.classList.add('offline');
-      netText.textContent = '인터넷 없이 오프라인 앱으로 실행 중 (Offline Shell Active)';
+      netText.textContent = '오프라인 캐시 가동 중 (Offline Shell Active)';
     }
   };
   window.addEventListener('online', updateNet);
   window.addEventListener('offline', updateNet);
   updateNet();
 
-  // Standalone detection
   const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
   if (isStandalone) {
     if (displayMode) displayMode.textContent = '독립형 웹앱 (PWA Standalone)';
     if (installBtn) {
       installBtn.disabled = true;
-      installBtn.textContent = '✓ 이미 기기에 앱으로 설치됨';
+      installBtn.textContent = '✓ 이미 앱으로 설치됨';
     }
   } else {
     if (displayMode) displayMode.textContent = '브라우저 탭 모드';
   }
 
-  // PWA Install Prompt Capture (Desktop Chrome/Edge & Mobile Android)
   window.addEventListener('beforeinstallprompt', (e) => {
     e.preventDefault();
     deferredPrompt = e;
     if (installBtn && !isStandalone) {
       installBtn.classList.add('pulse-btn');
-      installBtn.textContent = '📲 지금 바로 5B 앱 설치하기 (Install App)';
+      installBtn.textContent = '📲 지금 바로 5B 앱 설치하기';
     }
-    console.log('✓ [5B Byte] PWA install banner ready');
   });
 
   installBtn?.addEventListener('click', async () => {
     if (deferredPrompt) {
       deferredPrompt.prompt();
       const { outcome } = await deferredPrompt.userChoice;
-      console.log(`[5B Byte] Install response: ${outcome}`);
       deferredPrompt = null;
       installBtn.textContent = '✓ 설치 요청 완료';
     } else {
-      // Fallback Guide for Desktop / iOS
       if (installGuide) {
         installGuide.classList.add('show');
         installGuide.innerHTML = `
-          <strong>💻 기기별 설치 안내:</strong><br/>
-          • <strong>PC Chrome/Edge:</strong> 브라우저 상단 주소창 맨 오른쪽의 <strong>[설치 아이콘 ⊕]</strong> 또는 메뉴(⋮) > <strong>'5Bpage 설치'</strong>를 클릭하세요.<br/>
-          • <strong>아이폰(iOS Safari):</strong> 하단 공유 버튼(↑) > <strong>'홈 화면에 추가'</strong>를 누르면 오프라인 앱으로 등록됩니다.<br/>
+          <strong>기기별 설치 안내:</strong><br/>
+          • <strong>PC(Chrome/Edge):</strong> 주소창 오른쪽 끝의 <strong>[설치 아이콘 ⊕]</strong> 또는 메뉴(⋮) > <strong>'5B OS 설치'</strong>를 클릭하세요.<br/>
+          • <strong>아이폰(iOS Safari):</strong> 하단 공유 버튼(↑) > <strong>'홈 화면에 추가'</strong>를 누르세요.<br/>
           • <strong>안드로이드:</strong> 브라우저 메뉴(⋮) > <strong>'앱 설치'</strong>를 누르세요.
         `;
       }
@@ -203,11 +188,11 @@ function initPwaEngine() {
     }
   });
 
-  // Service Worker
+  // [중요] 루트의 service_worker.js 호출[cite: 1]
   if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('./service-worker.js', { scope: './' })
+    navigator.serviceWorker.register('./service_worker.js', { scope: './' })
       .then(reg => {
-        if (swStatus) swStatus.textContent = '활성 및 캐시 완비 (Active)';
+        if (swStatus) swStatus.textContent = '활성 (Active)';
         console.log('✓ [5B Byte] SW Scope:', reg.scope);
       })
       .catch(err => {
