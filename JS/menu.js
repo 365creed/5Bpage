@@ -1,47 +1,47 @@
 /**
- * Navigation & Scroll Spy Module
+ * Navigation Menu & Mobile Drawer Module
  */
 class NavigationMenu {
   constructor() {
     this.header = document.getElementById('main-header');
-    this.navLinks = document.querySelectorAll('.nav-link');
+    this.navMenu = document.getElementById('nav-menu');
+    this.toggleBtn = document.getElementById('btn-menu-toggle');
+    this.links = document.querySelectorAll('.nav-link');
     this.sections = document.querySelectorAll('section');
 
     this.init();
   }
 
   init() {
+    this.toggleBtn?.addEventListener('click', () => {
+      this.navMenu?.classList.toggle('open');
+    });
+
+    this.links.forEach(link => {
+      link.addEventListener('click', () => {
+        this.navMenu?.classList.remove('open');
+      });
+    });
+
     window.addEventListener('scroll', () => {
-      this.handleHeaderScroll();
-      this.handleScrollSpy();
-    });
+      this.handleScroll();
+    }, { passive: true });
   }
 
-  handleHeaderScroll() {
-    if (window.scrollY > 50) {
-      this.header.style.background = 'rgba(10, 12, 16, 0.95)';
-      this.header.style.padding = '0.75rem 2rem';
-    } else {
-      this.header.style.background = 'rgba(10, 12, 16, 0.75)';
-      this.header.style.padding = '1rem 2rem';
-    }
-  }
+  handleScroll() {
+    const scrollY = window.scrollY;
+    let currentId = '';
 
-  handleScrollSpy() {
-    let current = '';
-    const scrollPos = window.scrollY + 200;
-
-    this.sections.forEach((section) => {
-      if (scrollPos >= section.offsetTop && scrollPos < section.offsetTop + section.offsetHeight) {
-        current = section.getAttribute('id');
+    this.sections.forEach(sec => {
+      const top = sec.offsetTop - 120;
+      const height = sec.offsetHeight;
+      if (scrollY >= top && scrollY < top + height) {
+        currentId = sec.getAttribute('id');
       }
     });
 
-    this.navLinks.forEach((link) => {
-      link.classList.remove('active');
-      if (link.getAttribute('href') === `#${current}`) {
-        link.classList.add('active');
-      }
+    this.links.forEach(link => {
+      link.classList.toggle('active', link.getAttribute('href') === `#${currentId}`);
     });
   }
 }
