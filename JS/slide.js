@@ -1,8 +1,5 @@
 /**
- * 3B Beam: Cross-Platform Interactive Slider
- * - Click Navigation (Buttons & Dots)
- * - Mouse Drag & Mobile Touch Swipe
- * - Sound Frequency Synchronization
+ * 3B Beam: Cross-Platform Interactive Slider with State Broadcasting
  */
 class InteractiveSlider {
   constructor(wrapperId) {
@@ -18,7 +15,7 @@ class InteractiveSlider {
 
     this.currentIndex = 0;
     this.total = this.slides.length;
-    this.interval = 5500;
+    this.interval = 6000;
     this.autoTimer = null;
     this.progressTimer = null;
 
@@ -70,7 +67,7 @@ class InteractiveSlider {
       if (e.key === 'ArrowRight') { this.next(); this.startAuto(); }
     });
 
-    // Mobile Touch
+    // Touch Support
     this.track.addEventListener('touchstart', (e) => {
       this.startX = e.touches[0].clientX;
       this.diffX = 0;
@@ -91,7 +88,7 @@ class InteractiveSlider {
       this.startAuto();
     });
 
-    // Desktop Mouse Drag
+    // Mouse Drag Support
     this.wrapper.addEventListener('mousedown', (e) => {
       if (e.target.closest('button') || e.target.closest('.indicator-dot')) return;
       this.startX = e.clientX;
@@ -131,6 +128,13 @@ class InteractiveSlider {
 
     const activeSlide = this.slides[this.currentIndex];
     const pitch = parseFloat(activeSlide.getAttribute('data-pitch') || 440);
+    const note = activeSlide.getAttribute('data-note') || 'C4';
+    const color = activeSlide.getAttribute('data-color') || '#00f2fe';
+
+    // Broadcast state shift to system
+    window.dispatchEvent(new CustomEvent('5b:harmonic-shift', {
+      detail: { note, freq: pitch, color, source: '3B Beam', slideIndex: this.currentIndex }
+    }));
 
     window.dispatchEvent(new CustomEvent('app:slide-change', {
       detail: { index: this.currentIndex, pitch }
