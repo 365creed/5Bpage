@@ -1,8 +1,7 @@
 /**
- * 5Bpage Sliding Tile Puzzle Engine
- * - 100% Solvable Guarantee via Valid-Move Random Walk Shuffle
- * - Fluid Mobile Touch & Click Binding
- * - Timer, Move Counter, and Audio Event Dispatcher
+ * 4B Brain: Solvable 8-Tile Puzzle Engine
+ * - 100% Guaranteed Solvability (Simulated legal random moves from Goal State)
+ * - Click Event Delegation: Flawlessly supports Mouse Click, Trackpad, Touch, and Mobile Taps
  */
 class SlidingPuzzle {
   constructor(boardId) {
@@ -10,165 +9,140 @@ class SlidingPuzzle {
     if (!this.board) return;
 
     this.size = 3;
-    this.totalTiles = 9;
-    this.tiles = [1, 2, 3, 4, 5, 6, 7, 8, 0]; // 0 is blank
+    this.total = 9;
+    this.tiles = [];
     this.moves = 0;
-    this.timerSeconds = 0;
-    this.timerInterval = null;
+    this.seconds = 0;
+    this.timer = null;
     this.isSolved = false;
 
-    this.movesDisplay = document.getElementById('puzzle-moves');
-    this.timerDisplay = document.getElementById('puzzle-timer');
-    this.messageDisplay = document.getElementById('puzzle-message');
+    this.movesEl = document.getElementById('puzzle-moves');
+    this.timerEl = document.getElementById('puzzle-timer');
+    this.msgEl = document.getElementById('puzzle-message');
     this.resetBtn = document.getElementById('btn-puzzle-reset');
 
     this.init();
   }
 
   init() {
-    this.resetBtn?.addEventListener('click', () => this.startNewGame());
-
-    // Keyboard Arrow Control Support
-    window.addEventListener('keydown', (e) => {
-      const emptyIdx = this.tiles.indexOf(0);
-      const row = Math.floor(emptyIdx / this.size);
-      const col = emptyIdx % this.size;
-
-      if (e.key === 'ArrowUp' && row < this.size - 1) {
-        this.moveTile(emptyIdx + this.size);
-      } else if (e.key === 'ArrowDown' && row > 0) {
-        this.moveTile(emptyIdx - this.size);
-      } else if (e.key === 'ArrowLeft' && col < this.size - 1) {
-        this.moveTile(emptyIdx + 1);
-      } else if (e.key === 'ArrowRight' && col > 0) {
-        this.moveTile(emptyIdx - 1);
-      }
+    // Event delegation on the board container (handles both desktop click & mobile tap cleanly)
+    this.board.addEventListener('click', (e) => {
+      const tileEl = e.target.closest('.puzzle-tile');
+      if (!tileEl || tileEl.classList.contains('empty')) return;
+      const clickedIdx = parseInt(tileEl.getAttribute('data-idx'), 10);
+      this.handleTileClick(clickedIdx);
     });
 
+    this.resetBtn?.addEventListener('click', () => this.startNewGame());
     this.startNewGame();
   }
 
   startNewGame() {
     this.moves = 0;
-    this.timerSeconds = 0;
+    this.seconds = 0;
     this.isSolved = false;
+    if (this.msgEl) this.msgEl.textContent = '';
     this.updateStats();
-    if (this.messageDisplay) this.messageDisplay.textContent = '';
 
-    clearInterval(this.timerInterval);
-    this.timerInterval = setInterval(() => {
-      this.timerSeconds++;
+    clearInterval(this.timer);
+    this.timer = setInterval(() => {
+      this.seconds++;
       this.updateStats();
     }, 1000);
 
-    // 100% Solvable Guaranteed Shuffle
-    this.shuffleByValidMoves(80);
+    // Goal State: 1 to 8 in order, 0 is empty
+    this.tiles = [1, 2, 3, 4, 5, 6, 7, 8, 0];
+
+    // Mathematical guarantee: 120 valid random swaps starting from solved state
+    let lastSwapped = -1;
+    for (let step = 0; step < 120; step++) {
+      const emptyIdx = this.tiles.indexOf(0);
+      const validNeighbors = this.getNeighbors(emptyIdx).filter(idx => idx !== lastSwapped);
+      const chosenNeighbor = validNeighbors[Math.floor(Math.random() * validNeighbors.length)];
+
+      [this.tiles[emptyIdx], this.tiles[chosenNeighbor]] = [this.tiles[chosenNeighbor], this.tiles[emptyIdx]];
+      lastSwapped = emptyIdx;
+    }
+
     this.render();
   }
 
-  /**
-   * Shuffles by simulating legitimate tile moves from the solved state.
-   * Mathematically impossible to produce an unsolvable configuration.
-   */
-  shuffleByValidMoves(iterations = 80) {
-    this.tiles = [1, 2, 3, 4, 5, 6, 7, 8, 0];
-    let lastMoved = -1;
-
-    for (let i = 0; i < iterations; i++) {
-      const emptyIdx = this.tiles.indexOf(0);
-      const neighbors = this.getValidNeighbors(emptyIdx).filter(idx => idx !== lastMoved);
-      const chosen = neighbors[Math.floor(Math.random() * neighbors.length)];
-
-      // Swap
-      [this.tiles[emptyIdx], this.tiles[chosen]] = [this.tiles[chosen], this.tiles[emptyIdx]];
-      lastMoved = emptyIdx;
-    }
-
-    // Ensure it does not start in solved state
-    if (this.checkVictory()) {
-      this.shuffleByValidMoves(10);
-    }
-  }
-
-  getValidNeighbors(index) {
-    const row = Math.floor(index / this.size);
-    const col = index % this.size;
+  getNeighbors(idx) {
+    const row = Math.floor(idx / this.size);
+    const col = idx % this.size;
     const neighbors = [];
 
-    if (row > 0) neighbors.push(index - this.size); // Up
-    if (row < this.size - 1) neighbors.push(index + this.size); // Down
-    if (col > 0) neighbors.push(index - 1); // Left
-    if (col < this.size - 1) neighbors.push(index + 1); // Right
+    if (row > 0) neighbors.push(idx - this.size);
+    if (row < this.size - 1) neighbors.push(idx + this.size);
+    if (col > 0) neighbors.push(idx - 1);
+    if (col < this.size - 1) neighbors.push(idx + 1);
 
     return neighbors;
   }
 
   render() {
     this.board.innerHTML = '';
-    this.tiles.forEach((value, index) => {
+    this.tiles.forEach((value, idx) => {
       const tile = document.createElement('div');
       tile.classList.add('puzzle-tile');
+      tile.setAttribute('data-idx', idx);
 
       if (value === 0) {
         tile.classList.add('empty');
       } else {
         tile.textContent = value;
-        // Pointer down handles both mobile touch and desktop click instantly
-        tile.addEventListener('pointerdown', (e) => {
-          e.preventDefault();
-          this.moveTile(index);
-        });
       }
       this.board.appendChild(tile);
     });
   }
 
-  moveTile(index) {
+  handleTileClick(clickedIdx) {
     if (this.isSolved) return;
-    const emptyIndex = this.tiles.indexOf(0);
-    const validMoves = this.getValidNeighbors(emptyIndex);
 
-    if (validMoves.includes(index)) {
-      // Swap tile with blank
-      [this.tiles[index], this.tiles[emptyIndex]] = [this.tiles[emptyIndex], this.tiles[index]];
+    const emptyIdx = this.tiles.indexOf(0);
+    const neighbors = this.getNeighbors(emptyIdx);
+
+    if (neighbors.includes(clickedIdx)) {
+      // Valid adjacent move -> Swap
+      [this.tiles[clickedIdx], this.tiles[emptyIdx]] = [this.tiles[emptyIdx], this.tiles[clickedIdx]];
       this.moves++;
       this.updateStats();
 
-      // Trigger Mechanical Sound Effect
+      // Trigger mechanical tile sound
       window.dispatchEvent(new CustomEvent('app:puzzle-move'));
 
       this.render();
 
-      if (this.checkVictory()) {
-        this.handleVictory();
+      if (this.checkWin()) {
+        this.handleWin();
       }
     }
   }
 
-  checkVictory() {
-    for (let i = 0; i < this.totalTiles - 1; i++) {
+  checkWin() {
+    for (let i = 0; i < this.total - 1; i++) {
       if (this.tiles[i] !== i + 1) return false;
     }
-    return this.tiles[this.totalTiles - 1] === 0;
+    return this.tiles[this.total - 1] === 0;
   }
 
-  handleVictory() {
+  handleWin() {
     this.isSolved = true;
-    clearInterval(this.timerInterval);
-    if (this.messageDisplay) {
-      this.messageDisplay.textContent = `🎉 4B Brain 미션 완료! (${this.moves}회 이동 / ${this.formatTime(this.timerSeconds)})`;
+    clearInterval(this.timer);
+    if (this.msgEl) {
+      this.msgEl.textContent = `🎉 4B Brain 완료! [${this.moves}회 이동 • ${this.formatTime(this.seconds)}]`;
     }
     window.dispatchEvent(new CustomEvent('app:puzzle-win'));
   }
 
   updateStats() {
-    if (this.movesDisplay) this.movesDisplay.textContent = this.moves;
-    if (this.timerDisplay) this.timerDisplay.textContent = this.formatTime(this.timerSeconds);
+    if (this.movesEl) this.movesEl.textContent = this.moves;
+    if (this.timerEl) this.timerEl.textContent = this.formatTime(this.seconds);
   }
 
-  formatTime(seconds) {
-    const mins = Math.floor(seconds / 60).toString().padStart(2, '0');
-    const secs = (seconds % 60).toString().padStart(2, '0');
+  formatTime(s) {
+    const mins = Math.floor(s / 60).toString().padStart(2, '0');
+    const secs = (s % 60).toString().padStart(2, '0');
     return `${mins}:${secs}`;
   }
 }
