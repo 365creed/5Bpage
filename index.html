@@ -10,9 +10,9 @@
   <link rel="stylesheet" href="./css/style.css" />
 </head>
 <body>
-  <!-- Global Procedural Audio Dock -->
-  <aside id="audio-dock" class="audio-dock" aria-label="오디오 제어기">
-    <button id="btn-sound-toggle" class="sound-toggle-btn" type="button" aria-label="사운드 재생/음소거">
+  <!-- 1B Beat Floating Audio Dock -->
+  <aside id="audio-dock" class="audio-dock" aria-label="사운드 제어기">
+    <button id="btn-sound-toggle" class="sound-toggle-btn" type="button" aria-label="사운드 토글">
       <span class="icon-sound">🎵</span>
       <div class="sound-bars">
         <span class="bar"></span><span class="bar"></span><span class="bar"></span><span class="bar"></span>
@@ -35,7 +35,7 @@
         <a href="#sec-brain" class="nav-link">4B Brain</a>
         <a href="#sec-byte" class="nav-link">5B Byte</a>
       </nav>
-      <button class="menu-toggle" id="btn-menu-toggle" type="button" aria-label="메뉴 토글">
+      <button class="menu-toggle" id="btn-menu-toggle" type="button" aria-label="메뉴 열기">
         <span></span><span></span><span></span>
       </button>
     </div>
@@ -46,24 +46,25 @@
     <section id="sec-breeze" class="section hero-section">
       <canvas id="hero-canvas"></canvas>
       <div class="hero-content">
-        <span class="badge">2B • BREEZE (PHYSICS CANVAS)</span>
-        <h1 class="hero-title">KINETIC MOTION<br />CANVAS</h1>
+        <span class="badge">2B • BREEZE (KINETIC CANVAS)</span>
+        <h1 class="hero-title">FIVE BEATS.<br />ONE CANVAS.</h1>
         <p class="hero-desc">
-          화면을 클릭하거나 모바일로 드래그하여 실시간 입자 척력 및 연결망 물리 엔진을 경험하세요.
+          외부 라이브러리 0% 순수 자바스크립트로 구현된 5대 인터랙티브 경험.<br />
+          화면을 클릭하거나 마우스/터치로 드래그하여 실시간 입자 물리 엔진을 조작해보세요.
         </p>
         <div class="hero-actions">
-          <a href="#sec-beat" class="btn-primary">1B Beat 사운드 체험</a>
+          <a href="#sec-beat" class="btn-primary">1B Beat 체험</a>
           <a href="#sec-brain" class="btn-secondary">4B 퍼즐 풀기</a>
         </div>
       </div>
     </section>
 
-    <!-- [1B] Beat: Procedural Audio Synthesizer & Beat Pad -->
+    <!-- [1B] Beat: Procedural Audio Synthesizer -->
     <section id="sec-beat" class="section">
       <div class="section-header">
-        <span class="badge">1B • BEAT (AUDIO SYNTHESIS)</span>
-        <h2>Procedural Sound Synthesizer</h2>
-        <p>외부 음원(MP3) 저작권 없이 Web Audio API 오실레이터만으로 합성된 앰비언트 비트 패드입니다.</p>
+        <span class="badge">1B • BEAT (SYNTHESIZER)</span>
+        <h2>Procedural Sound Sequencer</h2>
+        <p>외부 MP3 파일 저작권 없이 Web Audio API 오실레이터로만 실시간 합성되는 앰비언트 비트 패드입니다.</p>
       </div>
 
       <div class="beat-console">
@@ -74,54 +75,117 @@
           <button class="pad-btn" data-note="523.25" type="button"><span>C5</span>Lead</button>
         </div>
         <div class="beat-controls">
-          <button id="btn-bgm-stream" class="btn-primary" type="button">비트 시퀀서 무한 루프 시작</button>
+          <button id="btn-bgm-stream" class="btn-primary" type="button">비트 시퀀서 루프 시작</button>
         </div>
       </div>
     </section>
 
-    <!-- [3B] Beam: Robust Touch/Mouse Synchronized Slider -->
+    <!-- [3B] Beam: 5-Dimension Spectrum Slider (SVG Vector Art) -->
     <section id="sec-beam" class="section">
       <div class="section-header">
         <span class="badge">3B • BEAM (MULTIMEDIA SLIDER)</span>
-        <h2>Cross-Platform Visual Slider</h2>
-        <p>마우스 드래그, 좌우 버튼, 모바일 터치 스와이프를 모두 지원하며 슬라이드마다 음계를 연주합니다.</p>
+        <h2>Touch & Mouse Spectrum Slider</h2>
+        <p>PC 마우스 드래그, 좌우 버튼, 스마트폰 터치 스와이프를 모두 지원하며 슬라이드마다 고유 주파수를 연주합니다.</p>
       </div>
 
       <div class="slider-wrapper" id="main-slider">
         <div class="slider-track" id="slider-track">
+          <!-- Slide 01: Beat -->
+          <article class="slide-item" data-pitch="261.63">
+            <div class="slide-card card-beat">
+              <div class="slide-art">
+                <svg viewBox="0 0 200 200" class="art-svg" aria-hidden="true">
+                  <circle cx="100" cy="100" r="70" class="svg-ring pulse-ring" />
+                  <path d="M40 100 Q 70 40, 100 100 T 160 100" class="svg-wave" />
+                  <path d="M40 100 Q 70 160, 100 100 T 160 100" class="svg-wave wave-sub" />
+                  <circle cx="100" cy="100" r="12" class="svg-core core-red" />
+                </svg>
+              </div>
+              <div class="slide-text">
+                <span class="slide-tag">261.63Hz (C4) • DIMENSION 01</span>
+                <h3>01 / BEAT (Acoustic Wave)</h3>
+                <p>Web Audio API를 통해 외부 음원 없이 실시간으로 합성되는 앰비언트 사운드와 주파수 동기화 인터랙션.</p>
+              </div>
+            </div>
+          </article>
+
+          <!-- Slide 02: Breeze -->
           <article class="slide-item" data-pitch="329.63">
-            <div class="slide-card grad-1">
+            <div class="slide-card card-breeze">
+              <div class="slide-art">
+                <svg viewBox="0 0 200 200" class="art-svg" aria-hidden="true">
+                  <circle cx="100" cy="100" r="80" class="svg-ring rotate-ring" />
+                  <path d="M30 70 C 80 20, 120 180, 170 130" class="svg-fluid" />
+                  <circle cx="70" cy="80" r="6" class="svg-particle" />
+                  <circle cx="130" cy="120" r="8" class="svg-particle" />
+                  <circle cx="100" cy="150" r="5" class="svg-particle" />
+                </svg>
+              </div>
               <div class="slide-text">
-                <span class="slide-tag">E4 Tone • Slide 01</span>
-                <h3>Kinetic Drag & Touch</h3>
-                <p>PC 마우스 좌우 드래그 및 스마트폰 제스처에 즉각적으로 반응하는 픽셀 트래커.</p>
+                <span class="slide-tag">329.63Hz (E4) • DIMENSION 02</span>
+                <h3>02 / BREEZE (Kinetic Fluid)</h3>
+                <p>마우스 궤적과 터치 제스처에 반응하여 척력을 일으키는 캔버스 2D 입자 물리 시뮬레이션.</p>
               </div>
             </div>
           </article>
+
+          <!-- Slide 03: Beam -->
           <article class="slide-item" data-pitch="392.00">
-            <div class="slide-card grad-2">
+            <div class="slide-card card-beam">
+              <div class="slide-art">
+                <svg viewBox="0 0 200 200" class="art-svg" aria-hidden="true">
+                  <polygon points="100,30 170,160 30,160" class="svg-prism" />
+                  <line x1="20" y1="100" x2="100" y2="100" class="svg-ray" />
+                  <line x1="100" y1="100" x2="180" y2="70" class="svg-spectrum s1" />
+                  <line x1="100" y1="100" x2="180" y2="100" class="svg-spectrum s2" />
+                  <line x1="100" y1="100" x2="180" y2="130" class="svg-spectrum s3" />
+                </svg>
+              </div>
               <div class="slide-text">
-                <span class="slide-tag">G4 Tone • Slide 02</span>
-                <h3>Audio-Visual Frequency</h3>
-                <p>슬라이드가 이동할 때마다 실시간 주파수를 브로드캐스트하여 오디오 피드백을 전달합니다.</p>
+                <span class="slide-tag">392.00Hz (G4) • DIMENSION 03</span>
+                <h3>03 / BEAM (Optical Slider)</h3>
+                <p>하드웨어 가속(GPU) Transform을 적용하여 드래그 및 스와이프 시 부드러운 60FPS 관성 이동 제공.</p>
               </div>
             </div>
           </article>
+
+          <!-- Slide 04: Brain -->
           <article class="slide-item" data-pitch="440.00">
-            <div class="slide-card grad-3">
+            <div class="slide-card card-brain">
+              <div class="slide-art">
+                <svg viewBox="0 0 200 200" class="art-svg" aria-hidden="true">
+                  <rect x="40" y="40" width="120" height="120" rx="16" class="svg-grid" />
+                  <line x1="80" y1="40" x2="80" y2="160" class="svg-grid-line" />
+                  <line x1="120" y1="40" x2="120" y2="160" class="svg-grid-line" />
+                  <line x1="40" y1="80" x2="160" y2="80" class="svg-grid-line" />
+                  <line x1="40" y1="120" x2="160" y2="120" class="svg-grid-line" />
+                  <circle cx="100" cy="100" r="10" class="svg-core green-core" />
+                </svg>
+              </div>
               <div class="slide-text">
-                <span class="slide-tag">A4 Tone • Slide 03</span>
-                <h3>Hardware Accelerated</h3>
-                <p>CSS GPU 가속을 적용하여 리플로우(Reflow) 없는 60FPS 모션을 보장합니다.</p>
+                <span class="slide-tag">440.00Hz (A4) • DIMENSION 04</span>
+                <h3>04 / BRAIN (Solvable Logic)</h3>
+                <p>역추적 셔플 알고리즘으로 100% 완성을 보장하는 슬라이딩 퍼즐 엔진과 기계식 햅틱 피드백.</p>
               </div>
             </div>
           </article>
+
+          <!-- Slide 05: Byte -->
           <article class="slide-item" data-pitch="523.25">
-            <div class="slide-card grad-4">
+            <div class="slide-card card-byte">
+              <div class="slide-art">
+                <svg viewBox="0 0 200 200" class="art-svg" aria-hidden="true">
+                  <polygon points="100,25 165,62 165,138 100,175 35,138 35,62" class="svg-cube" />
+                  <line x1="100" y1="100" x2="100" y2="25" class="svg-cube-inner" />
+                  <line x1="100" y1="100" x2="165" y2="138" class="svg-cube-inner" />
+                  <line x1="100" y1="100" x2="35" y2="138" class="svg-cube-inner" />
+                  <circle cx="100" cy="100" r="14" class="svg-core cyan-core" />
+                </svg>
+              </div>
               <div class="slide-text">
-                <span class="slide-tag">C5 Tone • Slide 04</span>
-                <h3>Zero Third-Party Library</h3>
-                <p>외부 플러그인(Swiper 등) 의존 없이 100% 바닐라 자바스크립트로 구현된 안정적 코어.</p>
+                <span class="slide-tag">523.25Hz (C5) • DIMENSION 05</span>
+                <h3>05 / BYTE (Offline Shell)</h3>
+                <p>Service Worker Cache API 및 PWA 독립 실행을 통해 오프라인 환경에서도 신뢰성 있는 앱 구동.</p>
               </div>
             </div>
           </article>
@@ -136,12 +200,12 @@
       </div>
     </section>
 
-    <!-- [4B] Brain: 100% Solvable 8-Tile Sliding Puzzle -->
+    <!-- [4B] Brain: Solvable 8-Tile Puzzle -->
     <section id="sec-brain" class="section">
       <div class="section-header">
         <span class="badge">4B • BRAIN (SOLVABLE PUZZLE)</span>
         <h2>Mechanical 8-Tile Puzzle</h2>
-        <p>완성 상태에서 역추적 셔플하여 <strong>100% 해결 가능</strong>하며, 마우스 클릭과 터치 모두 즉각 작동합니다.</p>
+        <p>완성 상태에서 역추적 셔플하여 <strong>100% 해결 가능</strong>하며, 마우스 클릭과 터치 모두 즉시 반응합니다.</p>
       </div>
 
       <div class="puzzle-container">
@@ -155,12 +219,12 @@
       </div>
     </section>
 
-    <!-- [5B] Byte: PWA Install & Offline Console -->
+    <!-- [5B] Byte: PWA Engine & Inspector -->
     <section id="sec-byte" class="section">
       <div class="section-header">
-        <span class="badge">5B • BYTE (PWA & OFFLINE ENGINE)</span>
+        <span class="badge">5B • BYTE (PWA & OFFLINE)</span>
         <h2>PWA Engine & Cache Inspector</h2>
-        <p>웹앱 설치 배너 실행 및 오프라인 상태 감지, Service Worker 캐시 진단 콘솔입니다.</p>
+        <p>웹앱 설치 배너 및 오프라인 상태 감지, Service Worker 캐시 진단 콘솔입니다.</p>
       </div>
 
       <div class="pwa-dashboard">
@@ -184,10 +248,9 @@
 
   <footer class="main-footer">
     <p><strong>5Bpage Architecture</strong> — Beat • Breeze • Beam • Brain • Byte</p>
-    <p class="copyright">Engineered with 100% Vanilla JavaScript.</p>
+    <p class="copyright">Engineered with 100% Vanilla JavaScript & Web Audio API.</p>
   </footer>
 
-  <!-- Scripts -->
   <script src="./js/soundCtrl.js"></script>
   <script src="./js/hero.js"></script>
   <script src="./js/slide.js"></script>
