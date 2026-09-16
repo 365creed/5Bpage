@@ -1,47 +1,50 @@
 /**
- * Navigation Menu & Mobile Drawer Module
+ * Navigation & Responsive Drawer Module
  */
 class NavigationMenu {
   constructor() {
     this.header = document.getElementById('main-header');
     this.navMenu = document.getElementById('nav-menu');
-    this.toggleBtn = document.getElementById('btn-menu-toggle');
-    this.links = document.querySelectorAll('.nav-link');
+    this.menuToggle = document.getElementById('btn-menu-toggle');
+    this.navLinks = document.querySelectorAll('.nav-link');
     this.sections = document.querySelectorAll('section');
 
     this.init();
   }
 
   init() {
-    this.toggleBtn?.addEventListener('click', () => {
+    this.menuToggle?.addEventListener('click', () => {
       this.navMenu?.classList.toggle('open');
     });
 
-    this.links.forEach(link => {
+    this.navLinks.forEach(link => {
       link.addEventListener('click', () => {
         this.navMenu?.classList.remove('open');
       });
     });
 
     window.addEventListener('scroll', () => {
-      this.handleScroll();
-    }, { passive: true });
-  }
+      const scrollY = window.scrollY;
 
-  handleScroll() {
-    const scrollY = window.scrollY;
-    let currentId = '';
-
-    this.sections.forEach(sec => {
-      const top = sec.offsetTop - 120;
-      const height = sec.offsetHeight;
-      if (scrollY >= top && scrollY < top + height) {
-        currentId = sec.getAttribute('id');
+      if (scrollY > 40) {
+        this.header.style.padding = '0.75rem 1.5rem';
+        this.header.style.background = 'rgba(8, 9, 13, 0.95)';
+      } else {
+        this.header.style.padding = '1rem 1.5rem';
+        this.header.style.background = 'rgba(8, 9, 13, 0.88)';
       }
-    });
 
-    this.links.forEach(link => {
-      link.classList.toggle('active', link.getAttribute('href') === `#${currentId}`);
+      let currentId = '';
+      this.sections.forEach(sec => {
+        const top = sec.offsetTop - 180;
+        if (scrollY >= top && scrollY < top + sec.offsetHeight) {
+          currentId = sec.getAttribute('id');
+        }
+      });
+
+      this.navLinks.forEach(link => {
+        link.classList.toggle('active', link.getAttribute('href') === `#${currentId}`);
+      });
     });
   }
 }
