@@ -5,16 +5,16 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
   <meta name="theme-color" content="#08090d" />
   <title>5B OS | 5-Dimension Web Architecture</title>
-  <!-- [중요] 최우선 보안 엔진 로드 (모든 스크립트 실행 전 환경 잠금) -->
-  <script src="./js/security.js"></script>
+
+  <!-- [Security Guard] 런타임 환경 잠금 및 보안 방어 엔진 최우선 로드 -->
+  <script src="./JS/security.js"></script>
 
   <!-- PWA & Favicon Link -->
   <link rel="manifest" href="./manifest.json" />
   <link rel="icon" type="image/png" sizes="32x32" href="./images/icon/favicon-32x32.png" />
   <link rel="stylesheet" href="./css/style.css" />
-  </head>
-  
-<body data-theme-note="C4">
+</head>
+<body data-active-note="C4">
   <!-- Global Audio Visualizer Dock -->
   <aside id="audio-dock" class="audio-dock" aria-label="5B 오디오 신디사이저">
     <div class="sound-toggle-btn" id="btn-sound-toggle">
@@ -48,51 +48,55 @@
   </header>
 
   <main>
-    <!-- [Gateway] User Action Oriented Hero -->
+    <!-- [Hero Gateway] 사용자 행동 중심 온보딩 -->
     <section id="hero-gateway" class="section hero-gateway">
       <div class="gateway-content">
-        <span class="badge pulse-badge">THE 5-DIMENSION WEB EXPERIENCE</span>
+        <span class="badge pulse-badge">5B INTERACTIVE WEB EXPERIENCE</span>
         <h1 class="hero-title">FIVE SENSES.<br />ONE INTERFACE.</h1>
         <p class="hero-desc">
           소리를 빚어내고(Beat), 입자를 흔들며(Breeze), 빛을 조작하고(Beam),<br class="pc-only" />
-          논리를 증명한 뒤(Brain), 당신의 디바이스에 웹앱으로 담아가세요(Byte).
+          퍼즐의 논리를 증명한 뒤(Brain), 웹앱으로 소장하세요(Byte).
         </p>
+        <div class="hero-cta-group">
+          <a href="#sec-beat" class="btn-primary">▶ 5B 체험 시작하기</a>
+          <a href="#sec-session" class="btn-secondary">내 세션 결과 확인</a>
+        </div>
         <div class="journey-steps">
           <a href="#sec-beat" class="step-card">
             <span class="step-num">1B</span>
             <span class="step-name">Beat</span>
-            <span class="step-sub">Sound</span>
+            <span class="step-sub">Sound (음향)</span>
           </a>
           <a href="#sec-breeze" class="step-card">
             <span class="step-num">2B</span>
             <span class="step-name">Breeze</span>
-            <span class="step-sub">Motion</span>
+            <span class="step-sub">Motion (움직임)</span>
           </a>
           <a href="#sec-beam" class="step-card">
             <span class="step-num">3B</span>
             <span class="step-name">Beam</span>
-            <span class="step-sub">Light</span>
+            <span class="step-sub">Light (빛과 파장)</span>
           </a>
           <a href="#sec-brain" class="step-card">
             <span class="step-num">4B</span>
             <span class="step-name">Brain</span>
-            <span class="step-sub">Logic</span>
+            <span class="step-sub">Logic (퍼즐 게임)</span>
           </a>
           <a href="#sec-byte" class="step-card">
             <span class="step-num">5B</span>
             <span class="step-name">Byte</span>
-            <span class="step-sub">System</span>
+            <span class="step-sub">System (오프라인 앱)</span>
           </a>
         </div>
       </div>
     </section>
 
-    <!-- [1B] Beat: Sound Synthesizer & Harmonic Broadcaster -->
+    <!-- [1B] Beat: 소리를 만들어보세요 (Sound) -->
     <section id="sec-beat" class="section">
       <div class="section-header">
-        <span class="badge">1B • BEAT (SOUND ARCHITECTURE)</span>
-        <h2>Procedural Sound Sequencer</h2>
-        <p>외부 음원(MP3) 없이 순수 Web Audio API로 실시간 합성됩니다. 패드를 눌러 화음을 지정하면 사이트 전체의 색채와 파티클 반응이 변화합니다.</p>
+        <span class="badge">1B • BEAT (SOUND)</span>
+        <h2>소리를 만들어보세요</h2>
+        <p>아래 음계 패드를 눌러보세요. 소리가 바뀌면서 화면 전체의 테마 색상과 파티클 속도가 실시간으로 동기화됩니다.</p>
       </div>
 
       <div class="beat-console">
@@ -105,43 +109,49 @@
 
         <div class="beat-pads">
           <button class="pad-btn" data-note="C4" data-freq="261.63" data-color="#00f2fe" type="button">
-            <span>261.6Hz</span>C4 Cyan
+            <span class="note-name">C4</span>
+            <span class="note-desc">낮은 음 (Cyan)</span>
           </button>
           <button class="pad-btn" data-note="E4" data-freq="329.63" data-color="#10b981" type="button">
-            <span>329.6Hz</span>E4 Green
+            <span class="note-name">E4</span>
+            <span class="note-desc">부드러운 음 (Green)</span>
           </button>
           <button class="pad-btn" data-note="G4" data-freq="392.00" data-color="#f59e0b" type="button">
-            <span>392.0Hz</span>G4 Amber
+            <span class="note-name">G4</span>
+            <span class="note-desc">밝은 음 (Amber)</span>
           </button>
           <button class="pad-btn" data-note="A4" data-freq="440.00" data-color="#8b5cf6" type="button">
-            <span>440.0Hz</span>A4 Violet
+            <span class="note-name">A4</span>
+            <span class="note-desc">높은 음 (Violet)</span>
           </button>
           <button class="pad-btn" data-note="C5" data-freq="523.25" data-color="#f43f5e" type="button">
-            <span>523.2Hz</span>C5 Rose
+            <span class="note-name">C5</span>
+            <span class="note-desc">가장 높은 음 (Rose)</span>
           </button>
         </div>
+
         <div class="beat-controls">
-          <button id="btn-bgm-stream" class="btn-primary pulse-btn" type="button">🎵 비트 시퀀서 루프 시작 (BGM ON)</button>
+          <button id="btn-bgm-stream" class="btn-primary pulse-btn" type="button">▶ 자동 비트 연주 시작 (BGM ON)</button>
         </div>
       </div>
     </section>
 
-    <!-- [2B] Breeze: Motion Fluid Particle Canvas -->
+    <!-- [2B] Breeze: 움직임을 만들어보세요 (Motion) -->
     <section id="sec-breeze" class="section breeze-section">
       <canvas id="hero-canvas"></canvas>
       <div class="breeze-overlay">
-        <span class="badge">2B • BREEZE (MOTION ARCHITECTURE)</span>
-        <h2>Kinetic Fluid Particles</h2>
-        <p>1B에서 지정한 주파수 색채가 입자에 실시간 전파됩니다. 마우스나 터치로 화면을 드래그해 파동을 일으켜보세요.</p>
+        <span class="badge">2B • BREEZE (MOTION)</span>
+        <h2>움직임을 만들어보세요</h2>
+        <p class="guide-text" id="breeze-guide-text">🖱 마우스를 움직이거나 화면을 터치하여 입자를 흔들어보세요.</p>
       </div>
     </section>
 
-    <!-- [3B] Beam: Light & Spectrum Slider -->
+    <!-- [3B] Beam: 빛과 주파수를 조작해보세요 (Light) -->
     <section id="sec-beam" class="section">
       <div class="section-header">
-        <span class="badge">3B • BEAM (LIGHT & SPECTRUM)</span>
-        <h2>Synchronized Spectrum Slider</h2>
-        <p>외부 이미지 없이 인라인 SVG 벡터로 렌더링되며, 마우스 드래그 및 모바일 터치 스와이프로 5개 차원을 조작합니다.</p>
+        <span class="badge">3B • BEAM (LIGHT)</span>
+        <h2>빛과 주파수를 조작해보세요</h2>
+        <p class="guide-text">← 카드를 좌우로 밀어서 5개 차원의 스펙트럼을 탐색하세요 →</p>
       </div>
 
       <div class="slider-wrapper" id="main-slider">
@@ -157,9 +167,9 @@
                 </svg>
               </div>
               <div class="slide-text">
-                <span class="slide-tag">261.63Hz (C4) • ACOUSTIC</span>
-                <h3>01 / Beat Synth Dimension</h3>
-                <p>Web Audio API를 통해 실시간 합성되는 앰비언트 사운드와 주파수 동기화 인터랙션.</p>
+                <span class="slide-tag">01 / BEAT</span>
+                <h3>Acoustic Sound Synth</h3>
+                <p>Web Audio API를 통해 실시간 합성되는 앰비언트 주파수 인터랙션.</p>
               </div>
             </div>
           </article>
@@ -176,9 +186,9 @@
                 </svg>
               </div>
               <div class="slide-text">
-                <span class="slide-tag">329.63Hz (E4) • FLUID</span>
-                <h3>02 / Breeze Motion Dimension</h3>
-                <p>터치 궤적과 마우스 벡터에 즉시 반응하여 척력을 일으키는 2D 입자 물리 시뮬레이션.</p>
+                <span class="slide-tag">02 / BREEZE</span>
+                <h3>Kinetic Motion Canvas</h3>
+                <p>터치 궤적과 마우스 벡터에 반응하여 척력을 일으키는 입자 물리 시뮬레이션.</p>
               </div>
             </div>
           </article>
@@ -195,9 +205,9 @@
                 </svg>
               </div>
               <div class="slide-text">
-                <span class="slide-tag">392.00Hz (G4) • OPTICAL</span>
-                <h3>03 / Beam Spectrum Dimension</h3>
-                <p>하드웨어 가속(GPU) Transform을 적용하여 드래그 및 스와이프 시 60FPS 관성 이동 제공.</p>
+                <span class="slide-tag">03 / BEAM</span>
+                <h3>Optical Spectrum Slider</h3>
+                <p>GPU 가속 CSS Transform을 활용한 부드러운 터치/마우스 슬라이드 인터랙션.</p>
               </div>
             </div>
           </article>
@@ -214,9 +224,9 @@
                 </svg>
               </div>
               <div class="slide-text">
-                <span class="slide-tag">440.00Hz (A4) • LOGIC</span>
-                <h3>04 / Brain Logic Dimension</h3>
-                <p>역추적 셔플 알고리즘으로 100% 완성을 보장하는 슬라이딩 퍼즐 엔진과 기계식 햅틱 피드백.</p>
+                <span class="slide-tag">04 / BRAIN</span>
+                <h3>Logic Puzzle Engine</h3>
+                <p>항상 해결 가능한 셔플 알고리즘과 물리적 기계음 피드백을 갖춘 슬라이딩 퍼즐.</p>
               </div>
             </div>
           </article>
@@ -231,9 +241,9 @@
                 </svg>
               </div>
               <div class="slide-text">
-                <span class="slide-tag">523.25Hz (C5) • SYSTEM</span>
-                <h3>05 / Byte System Dimension</h3>
-                <p>Service Worker Cache API 및 PWA 독립 실행을 통해 오프라인 환경에서도 안전한 앱 구동.</p>
+                <span class="slide-tag">05 / BYTE</span>
+                <h3>Offline System Architecture</h3>
+                <p>Service Worker 기반 캐시 설계로 네트워크 연결 없이도 안전하게 실행되는 웹앱.</p>
               </div>
             </div>
           </article>
@@ -248,82 +258,90 @@
       </div>
     </section>
 
-    <!-- [4B] Brain: Solvable Puzzle with Full Game Lifecycle -->
+    <!-- [4B] Brain: 퍼즐을 풀어보세요 (Logic) -->
     <section id="sec-brain" class="section">
       <div class="section-header">
-        <span class="badge">4B • BRAIN (SOLVABLE LOGIC ENGINE)</span>
-        <h2>Mechanical 8-Tile Puzzle</h2>
-        <p>수학적으로 해결 가능한 상태만 생성됩니다. 타일을 누르면 기계식 소리와 햅틱 진동이 울립니다.</p>
+        <span class="badge">4B • BRAIN (LOGIC)</span>
+        <h2>퍼즐을 풀어보세요</h2>
+        <p>빈칸 주변의 번호 타일을 터치하거나 클릭하여 1부터 8까지 순서대로 정렬하세요.</p>
       </div>
 
       <div class="puzzle-container">
-        <!-- Records & Stats Dashboard -->
+        <!-- Records & Controls Dashboard -->
         <div class="puzzle-records">
-          <div class="record-chip">최고 기록: <strong id="best-record-moves">--</strong>회 / <strong id="best-record-time">--:--</strong></div>
+          <div class="record-chip">내 최고 기록: <strong id="best-record-moves">--</strong>회 / <strong id="best-record-time">--:--</strong></div>
         </div>
 
         <div class="puzzle-stats">
           <div class="stat-box">이동: <span id="puzzle-moves">0</span></div>
           <div class="stat-box">시간: <span id="puzzle-timer">00:00</span></div>
-          <button id="btn-puzzle-start" class="btn-primary" type="button">🎮 게임 시작</button>
+          <button id="btn-puzzle-start" class="btn-primary" type="button">🎮 퍼즐 시작</button>
           <button id="btn-puzzle-undo" class="btn-secondary" type="button" disabled>↩ 되돌리기</button>
         </div>
 
         <div class="puzzle-board-wrapper">
           <div id="puzzle-board" class="puzzle-board"></div>
           <div id="puzzle-overlay" class="puzzle-overlay">
-            <p><strong>[게임 시작]</strong>을 누르면 100% 풀 수 있는 퍼즐이 섞입니다.</p>
+            <div class="tutorial-card">
+              <h3>HOW TO PLAY</h3>
+              <p>1. <strong>[퍼즐 시작]</strong> 버튼을 누르면 풀 수 있는 퍼즐이 섞입니다.</p>
+              <p>2. 빈칸과 인접한 타일을 누르면 이동합니다.</p>
+              <p>3. 1부터 8까지 숫자를 완성하면 성공!</p>
+            </div>
           </div>
         </div>
         <div id="puzzle-message" class="puzzle-message"></div>
       </div>
     </section>
 
-    <!-- [5B] Byte: User-Centric PWA & Offline Engine -->
+    <!-- [5B] Byte: 5B를 앱으로 가져가세요 (System) -->
     <section id="sec-byte" class="section">
       <div class="section-header">
-        <span class="badge">5B • BYTE (TAKE 5B WITH YOU)</span>
-        <h2>Take 5B With You</h2>
-        <p>인터넷 연결이 끊겨도 100% 실행됩니다. 데스크톱(PC)과 스마트폰 홈 화면에 독립형 앱으로 설치하세요.</p>
+        <span class="badge">5B • BYTE (SYSTEM)</span>
+        <h2>5B를 앱처럼 가지고 가세요</h2>
+        <p>인터넷이 없어도 실행됩니다. 현재 브라우저에서 바로 홈 화면 또는 PC 앱으로 설치할 수 있습니다.</p>
       </div>
 
       <div class="pwa-dashboard">
         <div class="pwa-status-card">
           <div class="status-indicator">
             <span class="status-dot" id="network-dot"></span>
-            <span id="network-text">네트워크 연결 확인 중...</span>
+            <span id="network-text">연결 상태 확인 중...</span>
           </div>
-          <div class="pwa-meta">
-            <div>시스템 캐시: <strong id="sw-status">확인 중</strong></div>
-            <div>실행 모드: <strong id="display-mode">브라우저 탭</strong></div>
+
+          <div class="pwa-benefits">
+            <div class="benefit-item">✓ 홈 화면 및 PC 바탕화면에서 단독 창으로 바로 실행</div>
+            <div class="benefit-item">✓ 오프라인 캐시를 통해 인터넷 연결 없이도 100% 작동</div>
+            <div class="benefit-item">✓ 라이브러리 없는 경량 셸로 빠른 시작 속도 보장</div>
           </div>
+
           <div class="pwa-actions">
-            <button id="btn-pwa-install" class="btn-primary" type="button">📲 이 기기에 5B 앱 설치하기</button>
-            <button id="btn-clear-cache" class="btn-secondary" type="button">캐시 새로고침</button>
+            <button id="btn-pwa-install" class="btn-primary pulse-btn" type="button">📲 5B 앱 설치하기</button>
+            <button id="btn-clear-cache" class="btn-secondary" type="button">캐시 재동기화</button>
           </div>
           <div id="install-guide" class="install-guide"></div>
         </div>
       </div>
     </section>
 
-    <!-- [Unified Integration] Your 5B Session Card & Viral Share -->
+    <!-- [Unified] My Session & Share -->
     <section id="sec-session" class="section session-section">
       <div class="section-header">
-        <span class="badge">5B ENGINE • REAL-TIME SESSION</span>
-        <h2>Your 5B Session</h2>
-        <p>당신이 조작한 사운드, 모션, 주파수, 퍼즐 기록이 하나의 5B 아티팩트로 실시간 기록됩니다.</p>
+        <span class="badge">5B OS • SESSION ARTIFACT</span>
+        <h2>나의 5B 세션 결과</h2>
+        <p>당신이 만든 소리, 모션, 주파수 조작, 퍼즐 기록이 하나의 인터랙티브 세션으로 집계되었습니다.</p>
       </div>
 
       <div class="session-card">
         <div class="session-header">
-          <div class="session-id">SYSTEM ARTIFACT: <span id="session-timestamp">ACTIVE</span></div>
-          <div class="session-badge">5B OS LIVE</div>
+          <div class="session-id">ARTIFACT ID: <span id="session-timestamp">ACTIVE</span></div>
+          <div class="session-badge">5B ENGINE LIVE</div>
         </div>
 
         <div class="session-grid">
           <div class="session-row">
             <span class="s-label">1B BEAT</span>
-            <span class="s-val" id="sess-beat">C4 (261.6Hz) • Looped</span>
+            <span class="s-val" id="sess-beat">C4 (261Hz) • Idle</span>
           </div>
           <div class="session-row">
             <span class="s-label">2B BREEZE</span>
@@ -335,7 +353,7 @@
           </div>
           <div class="session-row">
             <span class="s-label">4B BRAIN</span>
-            <span class="s-val" id="sess-brain">미완료</span>
+            <span class="s-val" id="sess-brain">미완료 (퍼즐 도전 전)</span>
           </div>
           <div class="session-row">
             <span class="s-label">5B BYTE</span>
@@ -344,7 +362,7 @@
         </div>
 
         <div class="session-actions">
-          <button id="btn-share-session" class="btn-primary" type="button">🚀 내 5B 세션 결과 공유하기</button>
+          <button id="btn-share-session" class="btn-primary" type="button">🚀 내 5B 결과 공유하기</button>
           <span id="share-feedback" class="share-feedback"></span>
         </div>
       </div>
@@ -353,15 +371,15 @@
 
   <footer class="main-footer">
     <p><strong>5B OS Architecture</strong> — Beat • Breeze • Beam • Brain • Byte</p>
-    <p class="copyright">Engineered with 100% Vanilla JavaScript, Web Audio Synth & Service Worker.</p>
+    <p class="copyright">Engineered with Vanilla JavaScript, Web Audio API & Service Worker.</p>
   </footer>
 
-  <!-- Modular Scripts -->
-  <script src="./js/soundCtrl.js"></script>
-  <script src="./js/hero.js"></script>
-  <script src="./js/slide.js"></script>
-  <script src="./js/puzzle.js"></script>
-  <script src="./js/menu.js"></script>
-  <script src="./js/app.js"></script>
+  <!-- [Scripts] 대문자 JS 경로로 정확히 호출 -->
+  <script src="./JS/soundCtrl.js"></script>
+  <script src="./JS/hero.js"></script>
+  <script src="./JS/slide.js"></script>
+  <script src="./JS/puzzle.js"></script>
+  <script src="./JS/menu.js"></script>
+  <script src="./JS/app.js"></script>
 </body>
 </html>
