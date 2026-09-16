@@ -1,7 +1,8 @@
 /**
  * 4B Brain: Solvable 8-Tile Puzzle Engine
- * - 100% Guaranteed Solvability (Simulated legal random moves from Goal State)
- * - Click Event Delegation (Mouse Click, Touch, Tap)
+ * - Clear Lifecycle: IDLE (Start Button) -> PLAYING (100% Solvable Scramble) -> SOLVED
+ * - Neighbor Highlight: Movable tiles have .movable class and cyan glow
+ * - Unified Click/Touch Support
  */
 class SlidingPuzzle {
   constructor(boardId) {
@@ -10,37 +11,46 @@ class SlidingPuzzle {
 
     this.size = 3;
     this.total = 9;
-    this.tiles = [];
+    this.tiles = [1, 2, 3, 4, 5, 6, 7, 8, 0]; // Goal state
     this.moves = 0;
     this.seconds = 0;
     this.timer = null;
-    this.isSolved = false;
+    this.isPlaying = false;
 
     this.movesEl = document.getElementById('puzzle-moves');
     this.timerEl = document.getElementById('puzzle-timer');
     this.msgEl = document.getElementById('puzzle-message');
-    this.resetBtn = document.getElementById('btn-puzzle-reset');
+    this.startBtn = document.getElementById('btn-puzzle-start');
+    this.overlay = document.getElementById('puzzle-overlay');
 
     this.init();
   }
 
   init() {
+    // Event delegation on board container
     this.board.addEventListener('click', (e) => {
+      if (!this.isPlaying) return;
       const tileEl = e.target.closest('.puzzle-tile');
       if (!tileEl || tileEl.classList.contains('empty')) return;
       const clickedIdx = parseInt(tileEl.getAttribute('data-idx'), 10);
       this.handleTileClick(clickedIdx);
     });
 
-    this.resetBtn?.addEventListener('click', () => this.startNewGame());
-    this.startNewGame();
+    this.startBtn?.addEventListener('click', () => {
+      this.startNewGame();
+    });
+
+    // Render initial goal state
+    this.render();
   }
 
   startNewGame() {
     this.moves = 0;
     this.seconds = 0;
-    this.isSolved = false;
+    this.isPlaying = true;
     if (this.msgEl) this.msgEl.textContent = '';
+    this.overlay?.classList.add('hidden');
+    this.startBtn.textContent = '🔄 다시 섞기';
     this.updateStats();
 
     clearInterval(this.timer);
@@ -49,10 +59,10 @@ class SlidingPuzzle {
       this.updateStats();
     }, 1000);
 
-    // Solved Goal State
+    // Goal state
     this.tiles = [1, 2, 3, 4, 5, 6, 7, 8, 0];
 
-    // Guarantee 100% Solvability: 120 valid random swaps from Goal State
+    // Mathematical guarantee: 120 valid random swaps from Goal State
     let lastSwapped = -1;
     for (let step = 0; step < 120; step++) {
       const emptyIdx = this.tiles.indexOf(0);
@@ -81,6 +91,9 @@ class SlidingPuzzle {
 
   render() {
     this.board.innerHTML = '';
+    const emptyIdx = this.tiles.indexOf(0);
+    const movableIndices = this.isPlaying ? this.getNeighbors(emptyIdx) : [];
+
     this.tiles.forEach((value, idx) => {
       const tile = document.createElement('div');
       tile.classList.add('puzzle-tile');
@@ -90,14 +103,15 @@ class SlidingPuzzle {
         tile.classList.add('empty');
       } else {
         tile.textContent = value;
+        if (movableIndices.includes(idx)) {
+          tile.classList.add('movable');
+        }
       }
       this.board.appendChild(tile);
     });
   }
 
   handleTileClick(clickedIdx) {
-    if (this.isSolved) return;
-
     const emptyIdx = this.tiles.indexOf(0);
     const neighbors = this.getNeighbors(emptyIdx);
 
@@ -106,6 +120,7 @@ class SlidingPuzzle {
       this.moves++;
       this.updateStats();
 
+      // Trigger mechanical sound
       window.dispatchEvent(new CustomEvent('app:puzzle-move'));
       this.render();
 
@@ -123,12 +138,16 @@ class SlidingPuzzle {
   }
 
   handleWin() {
-    this.isSolved = true;
+    this.isPlaying = false;
     clearInterval(this.timer);
     if (this.msgEl) {
       this.msgEl.textContent = `🎉 4B Brain 완료! [${this.moves}회 이동 • ${this.formatTime(this.seconds)}]`;
     }
+    this.startBtn.textContent = '🎮 다시 도전';
+    this.overlay?.classList.remove('hidden');
+    if (this.overlay) this.overlay.innerHTML = '<p>🎉 퍼즐 완성! 축하합니다!</p>';
     window.dispatchEvent(new CustomEvent('app:puzzle-win'));
+    this.render();
   }
 
   updateStats() {
