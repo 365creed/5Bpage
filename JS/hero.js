@@ -1,5 +1,5 @@
 /**
- * 2B Breeze: High-DPI Kinetic Particle Canvas
+ * 2B Breeze: Kinetic Particle Canvas with Dynamic Harmonic Color State
  */
 class HeroBackground {
   constructor(canvasId) {
@@ -8,8 +8,9 @@ class HeroBackground {
 
     this.ctx = this.canvas.getContext('2d');
     this.particles = [];
-    this.count = window.innerWidth < 768 ? 36 : 68;
+    this.count = window.innerWidth < 768 ? 36 : 64;
     this.pointer = { x: null, y: null, radius: 120 };
+    this.currentColor = '#00f2fe';
 
     this.init();
   }
@@ -19,6 +20,18 @@ class HeroBackground {
     this.create();
     this.bind();
     this.loop();
+
+    // Listen for state shift from 1B Beat or 3B Beam
+    window.addEventListener('5b:harmonic-shift', (e) => {
+      if (e.detail?.color) {
+        this.currentColor = e.detail.color;
+        // Temporary kinetic pulse to particles
+        this.particles.forEach(p => {
+          p.vx *= 1.4;
+          p.vy *= 1.4;
+        });
+      }
+    });
   }
 
   resize() {
@@ -75,6 +88,10 @@ class HeroBackground {
       p.x += p.vx;
       p.y += p.vy;
 
+      // Dampen kinetic pulse gradually
+      p.vx *= 0.995;
+      p.vy *= 0.995;
+
       if (p.x < 0 || p.x > this.width) p.vx *= -1;
       if (p.y < 0 || p.y > this.height) p.vy *= -1;
 
@@ -90,7 +107,7 @@ class HeroBackground {
         }
       }
 
-      this.ctx.fillStyle = 'rgba(0, 242, 254, 0.65)';
+      this.ctx.fillStyle = this.currentColor;
       this.ctx.beginPath();
       this.ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
       this.ctx.fill();
@@ -99,12 +116,14 @@ class HeroBackground {
         const p2 = this.particles[j];
         const dist = Math.hypot(p.x - p2.x, p.y - p2.y);
         if (dist < 95) {
-          this.ctx.strokeStyle = `rgba(0, 242, 254, ${0.15 * (1 - dist / 95)})`;
+          this.ctx.strokeStyle = this.currentColor;
+          this.ctx.globalAlpha = 0.15 * (1 - dist / 95);
           this.ctx.lineWidth = 0.8;
           this.ctx.beginPath();
           this.ctx.moveTo(p.x, p.y);
           this.ctx.lineTo(p2.x, p2.y);
           this.ctx.stroke();
+          this.ctx.globalAlpha = 1.0;
         }
       }
     }
