@@ -1,6 +1,6 @@
 /**
- * Hero Interactive Particle Canvas
- * Mouse Reactive, Performance-optimized Animation Frame loop
+ * 2B Bloom: Particle Constellation Canvas
+ * Supports Desktop Mouse & Mobile Touch Repulsion
  */
 class HeroBackground {
   constructor(canvasId) {
@@ -9,8 +9,8 @@ class HeroBackground {
 
     this.ctx = this.canvas.getContext('2d');
     this.particles = [];
-    this.particleCount = 55;
-    this.mouse = { x: null, y: null, radius: 120 };
+    this.particleCount = window.innerWidth < 768 ? 30 : 60;
+    this.pointer = { x: null, y: null, radius: 100 };
 
     this.init();
   }
@@ -33,11 +33,9 @@ class HeroBackground {
       this.particles.push({
         x: Math.random() * this.canvas.width,
         y: Math.random() * this.canvas.height,
-        size: Math.random() * 2 + 1,
-        speedX: (Math.random() - 0.5) * 0.8,
-        speedY: (Math.random() - 0.5) * 0.8,
-        baseX: 0,
-        baseY: 0
+        size: Math.random() * 2 + 1.2,
+        speedX: (Math.random() - 0.5) * 0.7,
+        speedY: (Math.random() - 0.5) * 0.7
       });
     }
   }
@@ -48,16 +46,22 @@ class HeroBackground {
       this.createParticles();
     });
 
-    window.addEventListener('mousemove', (e) => {
+    const updatePointer = (clientX, clientY) => {
       const rect = this.canvas.getBoundingClientRect();
-      this.mouse.x = e.clientX - rect.left;
-      this.mouse.y = e.clientY - rect.top;
-    });
+      this.pointer.x = clientX - rect.left;
+      this.pointer.y = clientY - rect.top;
+    };
 
-    window.addEventListener('mouseout', () => {
-      this.mouse.x = null;
-      this.mouse.y = null;
-    });
+    window.addEventListener('mousemove', (e) => updatePointer(e.clientX, e.clientY));
+    window.addEventListener('touchstart', (e) => {
+      updatePointer(e.touches[0].clientX, e.touches[0].clientY);
+    }, { passive: true });
+    window.addEventListener('touchmove', (e) => {
+      updatePointer(e.touches[0].clientX, e.touches[0].clientY);
+    }, { passive: true });
+
+    window.addEventListener('touchend', () => { this.pointer.x = null; this.pointer.y = null; });
+    window.addEventListener('mouseout', () => { this.pointer.x = null; this.pointer.y = null; });
   }
 
   animate() {
@@ -65,39 +69,36 @@ class HeroBackground {
 
     for (let i = 0; i < this.particles.length; i++) {
       const p = this.particles[i];
-
       p.x += p.speedX;
       p.y += p.speedY;
 
-      // Bounce on edges
       if (p.x < 0 || p.x > this.canvas.width) p.speedX *= -1;
       if (p.y < 0 || p.y > this.canvas.height) p.speedY *= -1;
 
-      // Mouse collision repulsion
-      if (this.mouse.x !== null && this.mouse.y !== null) {
-        const dx = this.mouse.x - p.x;
-        const dy = this.mouse.y - p.y;
+      // Pointer Repulsion
+      if (this.pointer.x !== null && this.pointer.y !== null) {
+        const dx = this.pointer.x - p.x;
+        const dy = this.pointer.y - p.y;
         const dist = Math.hypot(dx, dy);
 
-        if (dist < this.mouse.radius) {
-          const force = (this.mouse.radius - dist) / this.mouse.radius;
+        if (dist < this.pointer.radius) {
+          const force = (this.pointer.radius - dist) / this.pointer.radius;
           p.x -= (dx / dist) * force * 3;
           p.y -= (dy / dist) * force * 3;
         }
       }
 
-      // Draw particle
-      this.ctx.fillStyle = 'rgba(0, 242, 254, 0.6)';
+      this.ctx.fillStyle = 'rgba(0, 242, 254, 0.7)';
       this.ctx.beginPath();
       this.ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
       this.ctx.fill();
 
-      // Connect near particles
+      // Draw constellation connections
       for (let j = i + 1; j < this.particles.length; j++) {
         const p2 = this.particles[j];
         const dist = Math.hypot(p.x - p2.x, p.y - p2.y);
-        if (dist < 100) {
-          this.ctx.strokeStyle = `rgba(0, 242, 254, ${0.15 * (1 - dist / 100)})`;
+        if (dist < 90) {
+          this.ctx.strokeStyle = `rgba(0, 242, 254, ${0.12 * (1 - dist / 90)})`;
           this.ctx.lineWidth = 1;
           this.ctx.beginPath();
           this.ctx.moveTo(p.x, p.y);
@@ -106,7 +107,6 @@ class HeroBackground {
         }
       }
     }
-
     requestAnimationFrame(() => this.animate());
   }
 }
