@@ -1,8 +1,9 @@
 /**
- * 5Bpage Sound Controller & Procedural Audio Engine
- * - Zero Copyright: Synthesizes procedural ambient BGM via Web Audio API
- * - Mechanical Tile FX & Slide Frequency Shifter
- * - Unlocks automatically on the very first touch/click
+ * 1B Beat: 100% Procedural Web Audio Engine
+ * - Zero External Audio Files (No Copyright / Royalty Free)
+ * - Infinite Ambient Beat Sequencer
+ * - Tactile Mechanical Plastic Click Generator
+ * - Interactive Pitch Synthesis
  */
 class SoundController {
   constructor() {
@@ -10,39 +11,50 @@ class SoundController {
     this.isUnlocked = false;
     this.isBgmActive = false;
     this.bgmTimer = null;
-    this.bgmStep = 0;
+    this.step = 0;
 
-    // 5B Pentatonic Harmony Table (Hz): F3, G3, A3, C4, D4, E4, G4, A4
-    this.scale = [174.61, 196.00, 220.00, 261.63, 293.66, 329.63, 392.00, 440.00];
+    this.dock = document.getElementById('audio-dock');
+    this.statusText = document.getElementById('audio-status-text');
+    this.bgmStreamBtn = document.getElementById('btn-bgm-stream');
 
-    this.dockEl = document.getElementById('audio-dock');
-    this.toggleBtn = document.getElementById('btn-sound-toggle');
-    this.statusLabel = document.getElementById('audio-status-label');
+    // Synth Chords (Am -> F -> C -> G)
+    this.chords = [
+      [220.00, 261.63, 329.63], // A3, C4, E4
+      [174.61, 220.00, 261.63], // F3, A3, C4
+      [130.81, 164.81, 196.00], // C3, E3, G3
+      [196.00, 246.94, 293.66]  // G3, B3, D4
+    ];
 
     this.init();
   }
 
   init() {
-    this.toggleBtn?.addEventListener('click', (e) => {
-      e.stopPropagation();
-      this.toggleBgm();
+    this.dock?.addEventListener('click', () => this.toggleBgm());
+    this.bgmStreamBtn?.addEventListener('click', () => this.toggleBgm());
+
+    // Beat Pad Click Events
+    document.querySelectorAll('.pad-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        this.ensureContext();
+        const note = parseFloat(btn.getAttribute('data-note'));
+        btn.classList.add('active');
+        setTimeout(() => btn.classList.remove('active'), 150);
+        this.playTone(note, 'triangle', 0.4, 0.12);
+      });
     });
 
-    // Auto-unlock Web Audio on first gesture
+    // Auto-unlock AudioContext on first gesture
     const unlock = () => {
-      this.ensureAudioContext();
-      window.removeEventListener('click', unlock);
-      window.removeEventListener('touchstart', unlock);
+      this.ensureContext();
+      window.removeEventListener('pointerdown', unlock);
       window.removeEventListener('keydown', unlock);
     };
-    window.addEventListener('click', unlock, { passive: true });
-    window.addEventListener('touchstart', unlock, { passive: true });
-    window.addEventListener('keydown', unlock, { passive: true });
+    window.addEventListener('pointerdown', unlock);
+    window.addEventListener('keydown', unlock);
 
-    // Listen to custom application events
+    // Event Bus Listeners
     window.addEventListener('app:slide-change', (e) => {
-      const pitch = e.detail?.pitch || 440;
-      this.playSlideSwoosh(pitch);
+      this.playTone(e.detail?.pitch || 440, 'sine', 0.2, 0.05);
     });
 
     window.addEventListener('app:puzzle-move', () => {
@@ -50,137 +62,99 @@ class SoundController {
     });
 
     window.addEventListener('app:puzzle-win', () => {
-      this.playWinChime();
+      this.playWinFanfare();
     });
   }
 
-  ensureAudioContext() {
+  ensureContext() {
     if (!this.audioCtx) {
       const AudioCtx = window.AudioContext || window.webkitAudioContext;
-      if (AudioCtx) {
-        this.audioCtx = new AudioCtx();
-      }
+      this.audioCtx = new AudioCtx();
     }
-    if (this.audioCtx && this.audioCtx.state === 'suspended') {
+    if (this.audioCtx.state === 'suspended') {
       this.audioCtx.resume();
     }
     this.isUnlocked = true;
-  }
-
-  toggleBgm() {
-    this.ensureAudioContext();
-    this.isBgmActive = !this.isBgmActive;
-
-    if (this.isBgmActive) {
-      this.dockEl?.classList.add('playing');
-      if (this.statusLabel) this.statusLabel.textContent = 'BGM 재생 중 (Live Synth)';
-      this.startProceduralBgm();
-    } else {
-      this.dockEl?.classList.remove('playing');
-      if (this.statusLabel) this.statusLabel.textContent = '음소거 됨';
-      this.stopProceduralBgm();
+    if (this.statusText && !this.isBgmActive) {
+      this.statusText.textContent = 'Audio Engine Ready';
     }
   }
 
-  /**
-   * Procedural Ambient Looper (Generative Music, No MP3 Needed)
-   */
-  startProceduralBgm() {
-    if (this.bgmTimer) clearInterval(this.bgmTimer);
+  toggleBgm() {
+    this.ensureContext();
+    this.isBgmActive = !this.isBgmActive;
 
-    const playAmbientNote = () => {
-      if (!this.isBgmActive || !this.audioCtx) return;
-
-      // Select mellow pentatonic note with chord intervals
-      const rootNote = this.scale[this.bgmStep % this.scale.length];
-      const fifthNote = rootNote * 1.5;
-
-      this.synthesizeTone(rootNote, 'sine', 1.8, 0.04, true);
-      if (this.bgmStep % 2 === 0) {
-        this.synthesizeTone(fifthNote, 'triangle', 2.2, 0.02, true);
-      }
-
-      this.bgmStep++;
-    };
-
-    playAmbientNote();
-    this.bgmTimer = setInterval(playAmbientNote, 900);
+    if (this.isBgmActive) {
+      this.dock?.classList.add('playing');
+      if (this.statusText) this.statusText.textContent = 'Procedural BGM On';
+      if (this.bgmStreamBtn) this.bgmStreamBtn.textContent = '비트 시퀀서 정지';
+      this.startLoop();
+      this.playTone(523.25, 'sine', 0.15, 0.08);
+    } else {
+      this.dock?.classList.remove('playing');
+      if (this.statusText) this.statusText.textContent = 'Muted';
+      if (this.bgmStreamBtn) this.bgmStreamBtn.textContent = '비트 시퀀서 무한 루프 시작';
+      this.stopLoop();
+    }
   }
 
-  stopProceduralBgm() {
+  startLoop() {
+    if (this.bgmTimer) clearInterval(this.bgmTimer);
+    this.bgmTimer = setInterval(() => {
+      if (!this.isBgmActive || !this.audioCtx) return;
+
+      const chordIdx = Math.floor(this.step / 4) % this.chords.length;
+      const chord = this.chords[chordIdx];
+      const freq = chord[this.step % chord.length];
+
+      // Play soft arpeggio
+      this.playTone(freq, 'sine', 0.4, 0.035);
+
+      // Bass beat on measure start
+      if (this.step % 4 === 0) {
+        this.playTone(chord[0] / 2, 'triangle', 0.8, 0.05);
+      }
+      this.step++;
+    }, 320);
+  }
+
+  stopLoop() {
     if (this.bgmTimer) {
       clearInterval(this.bgmTimer);
       this.bgmTimer = null;
     }
   }
 
-  /**
-   * Mechanical Tile Snap Sound Effect
-   */
   playMechanicalClick() {
-    this.ensureAudioContext();
-    if (!this.audioCtx) return;
-
+    if (!this.isUnlocked || !this.audioCtx) return;
     try {
       const now = this.audioCtx.currentTime;
       const osc = this.audioCtx.createOscillator();
       const gain = this.audioCtx.createGain();
-      const filter = this.audioCtx.createBiquadFilter();
 
-      // Sharp mechanical transient
+      // Sharp pitch sweep simulates physical tile click
       osc.type = 'triangle';
-      osc.frequency.setValueAtTime(140, now);
-      osc.frequency.exponentialRampToValueAtTime(40, now + 0.04);
+      osc.frequency.setValueAtTime(320, now);
+      osc.frequency.exponentialRampToValueAtTime(30, now + 0.035);
 
-      filter.type = 'lowpass';
-      filter.frequency.setValueAtTime(800, now);
+      gain.gain.setValueAtTime(0.18, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.035);
 
-      gain.gain.setValueAtTime(0.3, now);
-      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.04);
-
-      osc.connect(filter);
-      filter.connect(gain);
+      osc.connect(gain);
       gain.connect(this.audioCtx.destination);
-
       osc.start(now);
       osc.stop(now + 0.04);
     } catch (_) {}
   }
 
-  /**
-   * Slide Transition Swoosh Synth
-   */
-  playSlideSwoosh(freq = 440) {
-    this.ensureAudioContext();
-    if (!this.audioCtx) return;
-
-    try {
-      const now = this.audioCtx.currentTime;
-      const osc = this.audioCtx.createOscillator();
-      const gain = this.audioCtx.createGain();
-
-      osc.type = 'sine';
-      osc.frequency.setValueAtTime(freq * 0.8, now);
-      osc.frequency.exponentialRampToValueAtTime(freq, now + 0.15);
-
-      gain.gain.setValueAtTime(0.001, now);
-      gain.gain.linearRampToValueAtTime(0.12, now + 0.04);
-      gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.2);
-
-      osc.connect(gain);
-      gain.connect(this.audioCtx.destination);
-
-      osc.start(now);
-      osc.stop(now + 0.2);
-    } catch (_) {}
+  playWinFanfare() {
+    const notes = [523.25, 659.25, 783.99, 1046.50];
+    notes.forEach((freq, idx) => {
+      setTimeout(() => this.playTone(freq, 'triangle', 0.35, 0.1), idx * 110);
+    });
   }
 
-  /**
-   * Tone Synthesizer helper with low-pass filtering
-   */
-  synthesizeTone(freq, type = 'sine', duration = 1.0, volume = 0.05, filterOn = false) {
-    if (!this.audioCtx) return;
-
+  playTone(freq, type, duration, volume) {
     try {
       const now = this.audioCtx.currentTime;
       const osc = this.audioCtx.createOscillator();
@@ -189,34 +163,15 @@ class SoundController {
       osc.type = type;
       osc.frequency.setValueAtTime(freq, now);
 
-      gain.gain.setValueAtTime(0.0001, now);
-      gain.gain.linearRampToValueAtTime(volume, now + 0.3);
+      gain.gain.setValueAtTime(0.001, now);
+      gain.gain.linearRampToValueAtTime(volume, now + 0.02);
       gain.gain.exponentialRampToValueAtTime(0.0001, now + duration);
 
-      if (filterOn) {
-        const filter = this.audioCtx.createBiquadFilter();
-        filter.type = 'lowpass';
-        filter.frequency.setValueAtTime(600, now);
-        osc.connect(filter);
-        filter.connect(gain);
-      } else {
-        osc.connect(gain);
-      }
-
+      osc.connect(gain);
       gain.connect(this.audioCtx.destination);
       osc.start(now);
       osc.stop(now + duration);
     } catch (_) {}
-  }
-
-  playWinChime() {
-    this.ensureAudioContext();
-    const chord = [523.25, 659.25, 783.99, 1046.50];
-    chord.forEach((note, i) => {
-      setTimeout(() => {
-        this.synthesizeTone(note, 'sine', 0.8, 0.15);
-      }, i * 140);
-    });
   }
 }
 
