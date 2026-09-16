@@ -49,7 +49,7 @@ class SoundController {
         btn.classList.add('active');
         setTimeout(() => btn.classList.remove('active'), 150);
 
-        this.playTone(freq, 'triangle', 0.5, 0.2);
+        this.playTone(freq, 'triangle', 0.5, 0.22);
 
         // Broadcast state to Breeze, Beam, Brain, Byte
         window.dispatchEvent(new CustomEvent('5b:harmonic-shift', {
@@ -67,7 +67,7 @@ class SoundController {
     window.addEventListener('pointerdown', unlock);
     window.addEventListener('keydown', unlock);
 
-    // Event Bus
+    // Event Bus Listeners
     window.addEventListener('app:slide-change', (e) => {
       this.playTone(e.detail?.pitch || 440, 'sine', 0.25, 0.12);
     });
@@ -103,14 +103,14 @@ class SoundController {
       this.dock?.classList.add('playing');
       this.eqDisplay?.classList.add('active');
       if (this.statusText) this.statusText.textContent = '🎵 BGM 재생 중 (Looping)';
-      if (this.bgmStreamBtn) this.bgmStreamBtn.textContent = '비트 시퀀서 정지 (BGM OFF)';
+      if (this.bgmStreamBtn) this.bgmStreamBtn.textContent = '⏹ 자동 비트 연주 정지 (BGM OFF)';
       this.startLoop();
       this.playTone(523.25, 'triangle', 0.2, 0.15);
     } else {
       this.dock?.classList.remove('playing');
       this.eqDisplay?.classList.remove('active');
       if (this.statusText) this.statusText.textContent = '음소거 (클릭하여 재생)';
-      if (this.bgmStreamBtn) this.bgmStreamBtn.textContent = '🎵 비트 시퀀서 루프 시작 (BGM ON)';
+      if (this.bgmStreamBtn) this.bgmStreamBtn.textContent = '▶ 자동 비트 연주 시작 (BGM ON)';
       this.stopLoop();
     }
 
